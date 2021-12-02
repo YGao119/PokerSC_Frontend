@@ -1,0 +1,18 @@
+
+@import '~antd/dist/antd.css';
+
+html{
+  
+  height:100vh;
+}
+body{
+  /*overflow: hidden;*/
+  height:100vh;
+}
+
+.gaming_ui {
+	background: radial-gradient(ellipse at bottom, #19232e 0%, #07070a 100%);
+	height: 100vh;
+}
+
+

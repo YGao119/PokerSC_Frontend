@@ -1,0 +1,111 @@
+
+.box{
+    height:100px;
+    background-color: white;
+    z-index:1;
+}
+
+.grid_item {
+    /*background-color: rgba(58, 80, 58, 0.185);*/
+    height: 17vh;
+    margin: 5px;
+    align-items: center;
+    text-align: center;
+}
+
+.grid_item_half{
+    /*background-color: rgba(58, 80, 58, 0.164);*/
+    height: 10vh;
+    margin: 5px;
+}
+
+.grid_item_q{
+    /*background-color: rgba(58, 80, 58, 0.205);*/
+    height: 7vh;
+    margin: 5px;
+}
+
+.grid_item_qq{
+    /*background-color: rgba(58, 80, 58, 0.205);*/
+    height: 4vh;
+    margin: 5px;
+}
+
+.action_button {
+	display: inline-block;
+	margin-top: 30px;
+    margin-left: 15px;
+    margin-right: 15px;
+	width: 50px;
+    height: 35px;
+	font-family: inherit;
+	letter-spacing: 1px;
+	padding: 13px 50px 13px;
+	outline: 0;
+	border: 1px solid rgb(255, 255, 255);
+	cursor: pointer;
+	z-index:5;
+    text-align: center;
+	position: relative;
+}
+
+.action_button::after {
+	content: "";
+	background-color: #797878ad;
+	width: 100%;
+	z-index: 2;
+	position: absolute;
+	height: 100%;
+	top: 4px;
+	left: 4px;
+	transition: 0.2s;
+}
+
+.action_button:hover::after {
+	top: 0px;
+	left: 0px;
+}
+
+.action_button2 {
+	display: inline-block;
+	margin-top: 10px;
+    margin-left: 15px;
+    margin-right: 15px;
+	width: 50px;
+    height: 35px;
+	font-family: inherit;
+	letter-spacing: 1px;
+	padding: 13px 50px 13px;
+	outline: 0;
+	border: 1px solid rgb(255, 255, 255);
+	cursor: pointer;
+	z-index:5;
+    text-align: center;
+	position: relative;
+}
+
+.action_button2::after {
+	content: "";
+	background-color: #797878ad;
+	width: 100%;
+	z-index: 2;
+	position: absolute;
+	height: 100%;
+	top: 4px;
+	left: 4px;
+	transition: 0.2s;
+}
+
+.action_button2:hover::after {
+	top: 0px;
+	left: 0px;
+}
+
+.board_card:hover{
+    transform: rotateY( 90deg ) ;
+    transition: 1s;
+}
+
+.animate_card{
+	display: inline-block;
+}
