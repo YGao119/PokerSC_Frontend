@@ -118,7 +118,7 @@ function LoginModalButton() {
   
 	return (
 	  <>
-		<div class="main_button" onClick={()=>{setVisible(true);}}><p style={{color:"white", fontSize:"14px"}} className="pixel_text">Login</p></div>
+		<div class="main_button" onClick={()=>{setVisible(true);}}><p style={{color:"white", fontSize:"14px", marginLeft:"-5px"}} className="pixel_text">Login</p></div>
 		<Modal
 		  title={<p style={{color:"black", fontSize:"12px",  "marginTop":"-9px"}} className="pixel_text">Enter Username and Password</p>}
 		  visible={visible}
@@ -220,7 +220,7 @@ function SignupModalButton() {
   
 	return (
 	  <>
-		<div class="main_button" onClick={()=>{setVisible(true);}}><p style={{color:"white", fontSize:"14px"}} className="pixel_text">SignUp</p></div>
+		<div class="main_button" onClick={()=>{setVisible(true);}}><p style={{color:"white", fontSize:"14px", marginLeft:"-8px"}} className="pixel_text">SignUp</p></div>
 		<Modal
 		  title={<p style={{color:"black", fontSize:"12px",  "marginTop":"-9px"}} className="pixel_text">Enter Username and Password</p>}
 		  visible={visible}
@@ -252,11 +252,14 @@ function App() {
 		<img className="main_img_right" style={{float:"right", marginRight:"10vw", marginTop:"-10vh", pointerEvents:"none"}} src="d_A.gif" height="250px" alt=""></img>
 		
 		<br/>
+		<div style={{justifyContent: "center", display: "flex", alignItems: "center"}}>
 		{LoginModalButton()}
 		{SignupModalButton()}
-		<div class="main_button" onClick={()=>{var linkToClick = document.getElementById('to_guest'); linkToClick.click();}}><p style={{color:"white", fontSize:"14px"}} className="pixel_text">Guest</p></div>
-		{/*<button onClick={()=>requestLogin("test1", "test")}>test1</button>
-		<button onClick={()=>requestSignUp("test1", "test")}>test2</button>*/}
+		<div class="main_button" onClick={()=>{var linkToClick = document.getElementById('to_guest'); linkToClick.click();}}><p style={{color:"white", fontSize:"14px", marginLeft:"-5px"}} className="pixel_text">Guest</p></div>
+		</div>
+		<br/><br/>
+		<button onClick={()=>requestLogin("test1", "test")}>test1</button>
+		<button onClick={()=>requestSignUp("test1", "test")}>test2</button>
 		
 		<Link id="to_gaming" to="/gaming"></Link>
 		<Link id="to_guest" to="/guest"></Link>
