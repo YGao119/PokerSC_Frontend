@@ -2,33 +2,79 @@ import './App.css';
 import React from "react";
 import { Link } from 'react-router-dom';
 import "antd/dist/antd.css";
-import { Modal, Button } from "antd";
+import { Modal, Button, Alert } from "antd";
 import { Form, Input } from "antd";
 import UserSession from './UserSession';
 
 
+function getRandomInt(max) {
+	return Math.floor(Math.random() * max);
+  }
 
-
-function requestLogin(username, password){
+function requestLogin(username, password, setAlert){
 	const requestOptions = {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain;charset=UTF-8' }
     };
-    fetch('http://45.79.72.230:8080/login?username=&password=1', requestOptions)
-        .then(response => console.log(response))
+	const requestUrl = `http://45.79.72.230:8080/login?username=${username}&password=${password}`;
+    fetch(requestUrl, requestOptions)
+		.then(response => response.text())
+		.then(
+			data => {
+				console.log(data);
+				if(data !== "failure" && data.length === 64){
+					UserSession.setName(username);
+					UserSession.setHash(data);
+					var linkToClick = document.getElementById('to_gaming');
+					linkToClick.click();
+				}
+				else{
+					setAlert("Login Failed, Check Your Username & Password");
+				}
+			}
+		)
+		.catch(err => {
+			setAlert("Encounter Error");
+		})
 }
 
-function requestSignUp(username, password){
+function requestSignUp(username, password, setAlert){
 	const requestOptions = {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain;charset=UTF-8' }
     };
-    fetch('http://45.79.72.230:8080/signup?username=2&password=1&profile_url=1', requestOptions)
+	var randInt = getRandomInt(10200);
+	var pfpUri = "pfps/"+randInt+".png";
+	const requestUrl = `http://45.79.72.230:8080/signup?username=${username}&password=${password}&profile_url=${pfpUri}`;
+    fetch(requestUrl, requestOptions)
 		.then(response => response.text())
-		.then(data => console.log(data));
+		.then(data => {
+			console.log(data);
+			if(data !== "failure" && data.length === 64){
+				UserSession.setName(username);
+				UserSession.setHash(data);
+				var linkToClick = document.getElementById('to_gaming');
+				linkToClick.click();
+			}
+			else{
+				setAlert("SignUp Failed, The Username Has Been Taken");
+			}
+		}).catch(err => {
+			setAlert("Encounter Error");
+	})
 }
 
 function LoginModalButton() {
+	const [alertVisible, setAlertVisible] = React.useState(false);
+	const [alertMessage, setAlertMessage] = React.useState("");
+	const handleClose = () => {
+		setAlertVisible(false);
+	};
+	const setAlert = (message) => {
+		setAlertMessage(message);
+		setAlertVisible(true);
+	}
+
 	const [visible, setVisible] = React.useState(false);
 	const [confirmLoading, setConfirmLoading] = React.useState(false);
   
@@ -44,16 +90,12 @@ function LoginModalButton() {
 	const handleCancel = () => {
 	  console.log("Clicked cancel button");
 	  setVisible(false);
+	  setAlertVisible(false);
 	};
   
 	const UserLoginForm = () => {
 	  const onFinish = (values) => {
-		console.log("Success:", values);
-		UserSession.setName(values["username"]);
-		var linkToClick = document.getElementById('to_gaming');
-		linkToClick.click();
-		//window.location.href = 'gaming';
-		//window.history.pushState('', 'New Page Title', '/gaming');
+		requestLogin(values["username"], values["password"], setAlert);
 	  };
   
 	  const onFinishFailed = (errorInfo) => {
@@ -61,6 +103,8 @@ function LoginModalButton() {
 	  };
   
 	  return (
+		<>
+		<Alert style={{visibility:alertVisible?"visible":"hidden", height:"30px"}} message={<p style={{color:"black", fontSize:"9px", "marginTop":"16px"}} className="pixel_text">{alertMessage}</p>} type="error" afterClose={handleClose} /><br/>
 		<Form
 		  name="basic"
 		  labelCol={{
@@ -113,6 +157,7 @@ function LoginModalButton() {
 			</Button>
 		  </Form.Item>
 		</Form>
+		</>
 	  );
 	};
   
@@ -134,6 +179,16 @@ function LoginModalButton() {
 };
   
 function SignupModalButton() {
+	const [alertVisible, setAlertVisible] = React.useState(false);
+	const [alertMessage, setAlertMessage] = React.useState("");
+	const handleClose = () => {
+		setAlertVisible(false);
+	};
+	const setAlert = (message) => {
+		setAlertMessage(message);
+		setAlertVisible(true);
+	}
+
 	const [visible, setVisible] = React.useState(false);
 	const [confirmLoading, setConfirmLoading] = React.useState(false);
   
@@ -149,13 +204,12 @@ function SignupModalButton() {
 	const handleCancel = () => {
 	  console.log("Clicked cancel button");
 	  setVisible(false);
+	  setAlertVisible(false);
 	};
   
 	const UserSignupForm = () => {
 	  const onFinish = (values) => {
-		console.log("Success:", values);
-		var linkToClick = document.getElementById('to_gaming');
-		linkToClick.click();
+		requestSignUp(values["username"], values["password"], setAlert);
 	  };
   
 	  const onFinishFailed = (errorInfo) => {
@@ -163,6 +217,8 @@ function SignupModalButton() {
 	  };
   
 	  return (
+		<>
+		<Alert style={{visibility:alertVisible?"visible":"hidden", height:"30px"}} message={<p style={{color:"black", fontSize:"9px", "marginTop":"16px"}} className="pixel_text">{alertMessage}</p>} type="error" afterClose={handleClose} /><br/>
 		<Form
 		  name="basic"
 		  labelCol={{
@@ -215,6 +271,7 @@ function SignupModalButton() {
 			</Button>
 		  </Form.Item>
 		</Form>
+		</>
 	  );
 	};
   
@@ -238,8 +295,10 @@ function SignupModalButton() {
 
 function App() {
 	document.title = "PokerSC";
+	
 	return (
 		<div className="main_home clearfix">
+		
 		<p className="pixel_text" style={{ textAlign: "center", marginTop: "25vh", fontSize: "100px"}}>
 			<span style={{color:"white"}}>Poker</span>
 			<span style={{color:"#990000"}}>S</span>
@@ -258,8 +317,6 @@ function App() {
 		<div class="main_button" onClick={()=>{var linkToClick = document.getElementById('to_guest'); linkToClick.click();}}><p style={{color:"white", fontSize:"14px", marginLeft:"-5px"}} className="pixel_text">Guest</p></div>
 		</div>
 		<br/><br/>
-		<button onClick={()=>requestLogin("test1", "test")}>test1</button>
-		<button onClick={()=>requestSignUp("test1", "test")}>test2</button>
 		
 		<Link id="to_gaming" to="/gaming"></Link>
 		<Link id="to_guest" to="/guest"></Link>

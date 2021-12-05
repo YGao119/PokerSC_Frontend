@@ -1,8 +1,8 @@
 import { Component } from "react";
 import "./Gaming.css";
 import UserSession from './UserSession';
-import { Link } from 'react-router-dom';
 import Board from './Board';
+import SpectateBoard from "./SpectateBoard";
 
 
 export default class Gaming extends Component {
@@ -25,12 +25,12 @@ export default class Gaming extends Component {
 		}
 		else{
 			if(UserSession.getName() === ""){
-				window.location.href = "/"
+				window.location.href = "/";
 			}
 			else{
 				return (
 					<div className="gaming_ui">
-					<h1 className="pixel_text" style={{color:"white"}}>Welcome, {UserSession.getName()}</h1>			
+					<Board></Board>
 					<div id="stars"></div>
 					<div id="stars2"></div>
 					<div id="stars3"></div>

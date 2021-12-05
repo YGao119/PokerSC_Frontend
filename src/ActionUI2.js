@@ -2,9 +2,12 @@ import React from "react";
 import ReactDOM from "react-dom";
 import "antd/dist/antd.css";
 import "./index.css";
-import { Modal, Button, Tooltip } from "antd";
+import { Modal, Button, Tooltip, Alert } from "antd";
+
+import { Link } from 'react-router-dom';
 
 import Slider from "@mui/material/Slider";
+import UserSession from './UserSession';
 
 export default class ActionUI2 extends React.Component {
   constructor(props){
@@ -13,10 +16,9 @@ export default class ActionUI2 extends React.Component {
       visible: false,
       visible2: false, // for leave
       canCheck: props.canCheck,
-      min: props.min,
-      max: props.max,
       value: props.min,
-      currentProfit: 500
+      alertVisible: false,
+      alertMessage: ""
     };
   }
   
@@ -28,9 +30,7 @@ export default class ActionUI2 extends React.Component {
   };
 
   handleConfirm = () => {
-    setTimeout(() => {
-      this.setState({ visible: false });
-    }, 1000);
+    this.requestAction('buyin', this.state.value, this.setAlert);
   };
 
   handleCancel = () => {
@@ -44,9 +44,7 @@ export default class ActionUI2 extends React.Component {
   };
 
   handleConfirm2 = () => {
-    setTimeout(() => {
-      this.setState({ visible2: false });
-    }, 1000);
+    this.requestAction('leave', 0, this.setAlert);
   };
 
   handleCancel2 = () => {
@@ -57,22 +55,58 @@ export default class ActionUI2 extends React.Component {
     this.setState({value: newValue});
   };
 
-  render() {
-    const { visible } = this.state;
 
+  requestAction(action, amount, setAlert){ // leave or buyin
+    const requestOptions = {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=UTF-8' }
+      };
+    var requestUrl = `http://45.79.72.230:8080/games/${action}?username=${UserSession.getName()}`;
+    if(action === 'buyin'){
+      requestUrl += `&amount=${amount}`;
+    }
+    console.log(requestUrl)
+    fetch(requestUrl, requestOptions)
+    .then(response => response.text())
+    .then(
+      data => {
+        console.log(data);
+        if(data !== "failure"){
+          console.log(requestUrl+" success");
+          if(action === "leave"){
+            var linkToClick = document.getElementById('to_home');
+					  linkToClick.click();
+          }
+        }
+        else{
+          setAlert("Action Invalid");
+        }
+      }
+    )
+    .catch(err => {
+      setAlert("Encounter Error");
+    })
+  }
+
+  setAlert = (message) => {
+    this.setState({alertMessage:message, alertVisible:"true"});
+    setTimeout(() => {
+      this.setState({alertVisible:false})
+    }, 3500);
+  }
+
+  render() {
+    const { visible, profits } = this.state;
+    
     return (
       <>
         <div class="col grid_item_q">
             <div className="action_button2" onClick={this.showModal2}><p style={{ color: "white", fontSize: "8px", marginLeft: "-20px" }} className="pixel_text">Leave</p></div>
             <div className="action_button2" onClick={this.showModal} ><p style={{ color: "white", fontSize: "8px", marginLeft: "-20px" }} className="pixel_text">Buyin</p></div>
-            <Tooltip trigger="click" placement="bottom" title={<div style={{textAlign:"center", justifyContent: "center"}}>
-                <span className="pixel_text" style={{ color: "lightGray", fontSize: "10px", marginTop:"2px"}}>{"Steven: +500"}</span><br/>
-                <span className="pixel_text" style={{ color: "lightGray", fontSize: "10px", marginTop:"2px"}}>{"Jason: +400"}</span><br/>
-                <span className="pixel_text" style={{ color: "lightGray", fontSize: "10px", marginTop:"2px"}}>{"Thomas: +210"}</span><br/>
-                <span className="pixel_text" style={{ color: "lightGray", fontSize: "10px", marginTop:"2px"}}>{"Peter: +200"}</span><br/>
-                <span className="pixel_text" style={{ color: "lightGray", fontSize: "10px", marginTop:"2px"}}>{"Test1: -200"}</span><br/>
-                <span className="pixel_text" style={{ color: "lightGray", fontSize: "10px", marginTop:"2px"}}>{"Test2: -200"}</span><br/>
-                <span className="pixel_text" style={{ color: "lightGray", fontSize: "10px", marginTop:"2px"}}>{"Test3: -200"}</span><br/>
+            <Tooltip key={this.props.profits} trigger="click" placement="bottom" title={<div style={{textAlign:"center", justifyContent: "center"}}>
+              {
+                  this.props.profits.map(each => <div><span className="pixel_text" style={{ color: "lightGray", fontSize: "10px", marginTop:"2px"}}>{each}</span><br/></div>)
+              }
                 </div>}>
                 <div className="action_button2" onClick={() => { }}><p style={{ color: "white", fontSize: "8px", marginLeft: "-20px" }} className="pixel_text">Stats</p></div>
             </Tooltip>
@@ -90,14 +124,19 @@ export default class ActionUI2 extends React.Component {
             </Button>
           ]}
         >
+          <div 
+              key={this.props.min}
+          >
+          <Alert style={{visibility:this.state.alertVisible?"visible":"hidden", height:"30px"}} message={<p style={{color:"black", fontSize:"9px", "marginTop":"16px"}} className="pixel_text">{this.state.alertMessage}</p>} type="error"/><br/>
           <Slider
-                min={this.state.min}
-                max={this.state.max}
+                min={this.props.min}
+                max={this.props.max}
                 style={{ marginTop: "10px" }}
-                defaultValue={this.state.min}
+                defaultValue={this.props.min}
                 valueLabelDisplay="off"
                 visible={false}
                 onChange={this.handleSliderChange}
+                step={100}
                 sx={{
                     width: 400,
                     color: "black",
@@ -114,6 +153,7 @@ export default class ActionUI2 extends React.Component {
             ></Slider>
             
             <p style={{color: "black", fontSize:"20px", marginTop:"10px"}} className="pixel_text">{this.state.value}</p>
+            </div>
         </Modal>
 
         <Modal
@@ -127,10 +167,11 @@ export default class ActionUI2 extends React.Component {
             </Button>
           ]}
         >
-          <p style={{color: "black", fontSize:"14px", marginTop:"10px"}} className="pixel_text">{"Your Current Profit:"}
-            {this.state.currentProfit > 0 ? 
-              <span  style={{color: "green"}}>{"+"+this.state.currentProfit}</span>:
-              <span  style={{color: "red"}}>{this.state.currentProfit}</span>
+          <Alert style={{visibility:this.state.alertVisible?"visible":"hidden", height:"30px"}} message={<p style={{color:"black", fontSize:"9px", "marginTop":"16px"}} className="pixel_text">{this.state.alertMessage}</p>} type="error" /><br/>
+          <p key={this.props.selfProfit} style={{color: "black", fontSize:"14px", marginTop:"10px"}} className="pixel_text">{"Your Current Profit:"}
+            {this.props.selfProfit > 0 ? 
+              <span  style={{color: "green"}}>{"+"+this.props.selfProfit}</span>:
+              <span  style={{color: "red"}}>{this.props.selfProfit}</span>
             }
           
           </p>
