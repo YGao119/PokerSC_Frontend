@@ -16,7 +16,7 @@ export default class Gaming extends Component {
 		if(this.state.isGuest){
 			return (
 				<div className="gaming_ui">
-					<Board></Board>
+					<SpectateBoard></SpectateBoard>
 					<div id="stars"></div>
 					<div id="stars2"></div>
 					<div id="stars3"></div>

@@ -34,13 +34,14 @@ export default class Board extends Component {
             "communityCards": "",
             "pot": 0,
             "selfHand": [""],
-            "selfPosition":5,
+            "selfPosition":-1,
             "minimumRaiseAmount":"",
             "actionPosition":"",
             "dealerPosition":0,
             "state":"",
             "numActionLeft":"",
-            "selfProfit": 0
+            "selfProfit": 0,
+            "timeLeft": ""
         }
         `
 
@@ -80,6 +81,10 @@ export default class Board extends Component {
 
 
     setBuyinModal(position){
+        if(this.state.selfPosition !== -1){
+            this.setAlert("You Already Have A Seat");
+            return;
+        }
         console.log(position);
         if(position === 0){
             this.buyinModal0.current.setBuyinModal();
@@ -151,7 +156,7 @@ export default class Board extends Component {
                 user["isActive"],  // todo
                 user["isSelf"], 
                 false, // isEmpty
-                user["isFold"], 
+                user["ifFold"], 
                 user["currentBet"], 
                 user["isDealer"], 
                 gameOn, 
@@ -231,6 +236,7 @@ export default class Board extends Component {
             selfProfit: parsed_state["selfProfit"],
             gameOn: parsed_state["gameOn"],
             users_ui: users_ui,
+            timeLeft: parsed_state["timeLeft"],
         })
         console.log(parsed_state);
         console.log("updated");
@@ -240,12 +246,41 @@ export default class Board extends Component {
         this.setParsedStateToState(this.state.parsed_state);
         //console.log(this.state);
         this.loadData();
-        this.interval = setInterval(() => this.setState({time:this.state.time+1}), 1000);
+        this.interval = setInterval(() => 
+            this.setState({time:this.state.time+1})
+        , 1000);
+        window.addEventListener('beforeunload', this.handleUnload);
+    }
+
+    handleUnload(event){
+        event.preventDefault();
+        event.returnValue = "";
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=UTF-8' }
+        };
+        var requestUrl = `http://45.79.72.230:8080/games/leave?username=${UserSession.getName()}`;
         
+        console.log(requestUrl)
+        fetch(requestUrl, requestOptions)
+        .then(response => response.text())
+        .then(
+            data => {
+            console.log(data);
+            if(data !== "failure"){
+                console.log(requestUrl+" success");
+            }
+            else{
+            }
+            }
+        )
+        .catch(err => {
+        })
     }
 
     componentWillUnmount() {
         clearInterval(this.interval);
+        window.removeEventListener('beforeunload', this.handleUnload);
     }
 
     playerUI(uri, username, remainingChips, action, handA, handB, isActive, isSelf, isEmpty, isFold, currentHandAmount, isDealer, gameOn, totalProfit, winRate, isWinner, thisPos) {
@@ -263,6 +298,9 @@ export default class Board extends Component {
         if(action === null){
             action = "";
         }
+        if(remainingChips === 0){
+            action = "allin"
+        }
         console.log(thisPos)
     
         if (isEmpty) {
@@ -277,15 +315,12 @@ export default class Board extends Component {
                 </div>)
         }
     
-    
-        if (isActive) {
-            userboxUri = "userbox_active.png";
-        }
-        else {
-            userboxUri = "userbox.png";
-        }
+        
         if (isSelf) {
             userboxUri = "userbox_self.png";
+        }
+        if (isActive) {
+            userboxUri = "userbox_active.png";
         }
         return (
     
@@ -316,6 +351,13 @@ export default class Board extends Component {
             </div>)
     }
 
+    setAlert = (message) => {
+        this.setState({alertVisible:true, alertMessage:message});
+        setTimeout(() => {
+            this.setState({alertVisible:false})
+          }, 3500);
+    }
+
     render() {
         if(this.state.chasingTime !== this.state.time){
             this.loadData();
@@ -324,13 +366,6 @@ export default class Board extends Component {
         const communityCards = this.state.communityCards;
         const alertVisible = this.state.alertVisible;
 	    const alertMessage = this.state.alertMessage;
-        const setAlert = (message) => {
-            this.setState({alertVisible:true, alertMessage:message});
-            setTimeout(() => {
-                this.setState({alertVisible:false})
-              }, 3500);
-        }
-        
 
         return (
             <div>
@@ -339,7 +374,7 @@ export default class Board extends Component {
                     <div class="row row-cols-9">
                         <ActionUI2 min={200} max={1200} profits={this.state.profits} selfProfit={this.state.selfProfit}></ActionUI2> {/*todo, max*/}
                         <div class="col grid_item_q"></div>
-                        <div class="col-4 grid_item_q"><Alert style={{ height: "40px", marginTop: "5px" }} message={<p style={{ color: "black", fontSize: "8px", "marginTop": "14px" }} className="pixel_text">{"Use Full Screen For Better Experience"}</p>} type="info" closeText={<p className="pixel_text" style={{ fontSize: "12px", "marginTop": "14px" }}>X</p>} /></div>
+                        <div class="col-4 grid_item_q"><Alert style={{ height: "40px", marginTop: "5px" }} message={<p style={{ color: "black", fontSize: "9px", "marginTop": "14px" }} className="pixel_text">{"Use Full Screen For Better Experience"}</p>} type="info" closeText={<p className="pixel_text" style={{ fontSize: "12px", "marginTop": "14px" }}>X</p>} /></div>
 
                     </div>
                     <div class="row row-cols-9">
@@ -376,7 +411,10 @@ export default class Board extends Component {
                     <div class="row row-cols-9">
                         <div class="col grid_item_half"></div>
                         <div class="col grid_item_half"></div>
-                        <div class="col-5 grid_item_half" style={{textAlign:"center"}}><p style={{ color: "white", fontSize: "12px", "marginTop": "5px" }} className="pixel_text">{this.state.gameOn ? "Pot: "+this.state.pot : "Waiting For Game To Start..."}</p></div>
+                        <div class="col-5 grid_item_half" style={{textAlign:"center"}}>
+                            <p style={{ color: "white", fontSize: "12px", "marginTop": "5px" }} className="pixel_text">{this.state.gameOn ? "Pot: "+this.state.pot : "Waiting For Game To Start..."}</p>
+                            <p style={{ color: "white", fontSize: "12px", "marginTop": "-10px" }} className="pixel_text">{this.state.timeLeft ? "Time Left: "+this.state.timeLeft : ""}</p>
+                        </div>
                         
                         <div class="col grid_item_half"></div>
                         <div class="col grid_item_half"></div>
@@ -394,8 +432,8 @@ export default class Board extends Component {
                     </div>
                     <div class="row row-cols-9">
                         <div class="col grid_item"></div>
-                        {this.state.actionPosition===this.state.selfPosition?<ActionUI min={this.state.minimumRaiseAmount} max={this.state.remainingChips[this.state.selfPosition]} canCheck={this.state.canCheck} selfPosition={this.state.selfPosition} setAlert={setAlert}></ActionUI>:null}
-                        <div class="col grid_item" style={{display:"flex",justifyContent:"center"}}><Alert style={{visibility:alertVisible?"visible":"hidden", height:"30px", "marginTop":"0px", width:"200px"}} message={<p style={{color:"black", fontSize:"9px", "marginTop":"16px"}} className="pixel_text">{alertMessage}</p>} type="error"/></div>
+                        {this.state.actionPosition===this.state.selfPosition?<ActionUI min={this.state.minimumRaiseAmount === 0 ? 2 : (this.state.minimumRaiseAmount<this.state.remainingChips[this.state.selfPosition]+this.state.users[this.state.selfPosition]["currentBet"]?this.state.minimumRaiseAmount:this.state.remainingChips[this.state.selfPosition]+this.state.users[this.state.selfPosition]["currentBet"])} max={this.state.remainingChips[this.state.selfPosition]+this.state.users[this.state.selfPosition]["currentBet"]} canCheck={this.state.canCheck} selfPosition={this.state.selfPosition} setAlert={this.setAlert}></ActionUI>:null}
+                        <div class="col grid_item" style={{display:"flex",justifyContent:"center"}}><Alert style={{visibility:alertVisible?"visible":"hidden", height:"30px", "marginTop":"0px", width:"250px"}} message={<p style={{color:"black", fontSize:"9px", "marginTop":"16px"}} className="pixel_text">{alertMessage}</p>} type="error"/></div>
                     </div>
                 </div>
             

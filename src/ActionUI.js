@@ -26,7 +26,12 @@ export default class ActionUI extends React.Component {
   };
 
   handleConfirm = () => {
-    this.requestAction("raise", this.state.value, this.props.setAlert)
+    if(this.props.max < this.props.min){
+      this.handleCancel();
+    }
+    else{
+      this.requestAction("raise", this.state.value, this.props.setAlert)
+    }
   };
 
   handleCancel = () => {
@@ -72,9 +77,9 @@ export default class ActionUI extends React.Component {
     }
     return (
       <>
-        <div class="col grid_item_q">
+        <div class="col grid_item_q" style={{display:"flex", justifyContent:"center"}}>
             {
-            this.props.canCheck ?
+            !this.props.canCheck ?
             <div className="action_button" onClick={() => {this.requestAction("fold", 0, this.props.setAlert)}}><p style={{ color: "white", fontSize: "8px", marginLeft: "-20px" }} className="pixel_text">Fold</p></div>:
             null
             } 
@@ -97,7 +102,9 @@ export default class ActionUI extends React.Component {
             </Button>
           ]}
         >
-          <div key={this.props.max}>
+          {
+            this.props.min <= this.props.max ? 
+            <div key={this.props.max}>
           <Slider
                 key={this.props.min}
                 min={this.props.min}
@@ -124,7 +131,9 @@ export default class ActionUI extends React.Component {
             
             <p style={{color: "black", fontSize:"20px", marginTop:"10px"}} className="pixel_text">{this.state.value !== this.props.max ? this.state.value : "All In!"}</p>
             
-            </div>
+            </div>:
+            <p style={{color: "black", fontSize:"15px", marginTop:"10px"}} className="pixel_text">{"Not Enough Chips To Raise"}</p>
+          }
         </Modal>
       </>
     );

@@ -10,84 +10,338 @@ import Fade from '@mui/material/Fade';
 import { Modal, Button, Tooltip, Alert } from "antd";
 import Slide from '@mui/material/Slide';
 import ActionUI from './ActionUI'
+import ActionUI2 from './ActionUI2'
 import ActionUI3 from './ActionUI3'
-
+import InitialBuyinModal from './InitialBuyinModal'
 
 export default class SpectateBoard extends Component {
     constructor(props) {
         super(props);
-        this.state={
-            users: [
-                {
-                    username: "Jason",
-                    currentAction: "",
-                    currentBet: "20",
-                    remainingChips: "4021",
-                    totalProfit: "130",
-                    currentProfit: "135",
-                    winRate: "13566",
-                    hand: [""],
-                },
-                null,
-                {
-                    username: "jack",
-                    currentAction: "",
-                    currentBet: "20",
-                    remainingChips: "4021",
-                    totalProfit: "130",
-                    currentProfit: "135",
-                    winRate: "13566",
-                    hand: ["",""],
-                },
-                null,
-                null,
-                null,
-                null,
-                null
-            ],
-            profits: {"test1":"+100", "test2":"+100", "test3":"+100"},
-            communityCards: ["ck", "ha", "sj", "hq", "sk"],
-            pot: 1234,
-            selfHand: ["hA", "hK"],
-            selfPostion: 0,
+        //const state_json = props.state_json
+        this.buyinModal0 = React.createRef();
+        this.buyinModal1 = React.createRef();
+        this.buyinModal2 = React.createRef();
+        this.buyinModal3 = React.createRef();
+        this.buyinModal4 = React.createRef();
+        this.buyinModal5 = React.createRef();
+        this.buyinModal6 = React.createRef();
+        this.buyinModal7 = React.createRef();
+        var state_json = `
+        {
+            "users": [null,null,null,null,null,null,null,null],
+            "playersProfits": [""],
+            "gameOn": true,
+            "remainingChips": [0, 0, 0, 0, 0, 0, 0, 0],
+            "communityCards": "",
+            "pot": 0,
+            "selfHand": [""],
+            "selfPosition":5,
+            "minimumRaiseAmount":"",
+            "actionPosition":"",
+            "dealerPosition":0,
+            "state":"",
+            "numActionLeft":"",
+            "selfProfit": 0
+        }
+        `
+
+        const parsed_state = JSON.parse(state_json);
+
+        this.state = {
+            parsed_state: parsed_state,
+            users: [],
+            profits: [],
+            communityCards: [],
+            pot: 0,
+            selfHand: ["", ""],
+            selfPosition: 5,
             minimumRaiseAmount: 0,
-            actionPosition:0,
-            checked: false,
-            checked2: false,
-            checked3: false,
-            checkedPlayer: false,
+            actionPosition: 0,
+            state: 0, // num of cards shown
+            canCheck: false,
+            remainingChips: [0,0,0,0,0,0,0,0],
+            alertVisible: false,
+            alertMessage: "",
+            gameOn: false,
+            users_ui: [
+                this.playerUI("", "", 0, "", "", "", false, false, true, false, 0, false, false, 0, 0, 0),
+                this.playerUI("", "", 0, "", "", "", false, false, true, false, 0, false, false, 0, 0, 1),
+                this.playerUI("", "", 0, "", "", "", false, false, true, false, 0, false, false, 0, 0, 2),
+                this.playerUI("", "", 0, "", "", "", false, false, true, false, 0, false, false, 0, 0, 3),
+                this.playerUI("", "", 0, "", "", "", false, false, true, false, 0, false, false, 0, 0, 4),
+                this.playerUI("", "", 0, "", "", "", false, false, true, false, 0, false, false, 0, 0, 5),
+                this.playerUI("", "", 0, "", "", "", false, false, true, false, 0, false, false, 0, 0, 6),
+                this.playerUI("", "", 0, "", "", "", false, false, true, false, 0, false, false, 0, 0, 7),
+            ],
+            time:0,
+            buyinPos: -1,
+
+        };
+    }
+
+
+    setBuyinModal(position){
+        console.log(position);
+        if(position === 0){
+            this.buyinModal0.current.setBuyinModal();
+        }
+        if(position === 1){
+            this.buyinModal1.current.setBuyinModal();
+        }
+        if(position === 2){
+            this.buyinModal2.current.setBuyinModal();
+        }
+        if(position === 3){
+            this.buyinModal3.current.setBuyinModal();
+        }
+        if(position === 4){
+            this.buyinModal4.current.setBuyinModal();
+        }
+        if(position === 5){
+            this.buyinModal5.current.setBuyinModal();
+        }
+        if(position === 6){
+            this.buyinModal6.current.setBuyinModal();
+        }
+        if(position === 7){
+            this.buyinModal7.current.setBuyinModal();
+        }
+        /*
+        switch(position){
+            case 0:
+                this.buyinModal0.current.setBuyinModal();
+                break;
+            case 1:
+                this.buyinModal1.current.setBuyinModal();
+                break;
+            case 2:
+                this.buyinModal2.current.setBuyinModal();
+                break;
+            case 3:
+                this.buyinModal3.current.setBuyinModal();
+                break;
+            case 4:
+                this.buyinModal4.current.setBuyinModal();
+                break;
+            case 5:
+                this.buyinModal5.current.setBuyinModal();
+                break;
+            case 6:
+                this.buyinModal6.current.setBuyinModal();
+                break;
+            case 7:
+                this.buyinModal7.current.setBuyinModal();
+                break;
+        }*/
+    }
+
+    getUserUI(user, gameOn, position){
+        console.log(user);
+        console.log(position);
+        if(user == null){
+            return this.playerUI("", "", 0, "", "", "", false, false, true, false, 0, false, false, 0, 0, false, position);
+        }
+        else{
+            return this.playerUI(
+                user["profileUrl"], 
+                user["username"], 
+                user["remainingChips"], 
+                user["currentAction"], 
+                user["hand"][0], 
+                user["hand"][1], 
+                user["isActive"],  // todo
+                user["isSelf"], 
+                false, // isEmpty
+                user["isFold"], 
+                user["currentBet"], 
+                user["isDealer"], 
+                gameOn, 
+                user["totalProfit"], 
+                user["winRate"],
+                user["isWinner"],
+                position
+            );
         }
     }
 
+    loadData() {
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=UTF-8' }
+        };
+        var requestUrl = `http://45.79.72.230:8080/games?username=SpectatorAccount&passwordHash=e84f9c4cfdb9a3d26424b9f334f4ccbd26ce34a9aa135a30681126942917c589`;
+        
+        console.log(requestUrl)
+        fetch(requestUrl, requestOptions)
+        .then(response => response.text())
+        .then(
+            data => {
+            //console.log(data);
+            if(data !== "no user found"){
+                console.log(requestUrl+" success");
+                console.log(data);
+                const parsed_state = JSON.parse(data);
+                console.log(parsed_state);
+                this.setParsedStateToState(parsed_state);
+                console.log("updated2");
+            }
+            else{
+                //alert("no user found");
+            }
+            }
+        )
+        .catch(err => {
+            //console.log("Encounter Error");
+        })
+     }
+
+    shiftArrayToRight(arr, places) {
+        for (var i = 0; i < places; i++) {
+            arr.unshift(arr.pop());
+        }
+    }
+
+    setParsedStateToState(parsed_state){
+        var users_ui = []
+        var position = 0;
+        for(position = 0; position < 8; position++){
+            users_ui.push(this.getUserUI(parsed_state["users"][position], parsed_state["gameOn"], position));
+        }
+        // make self to be on 5
+        const selfPosition = parsed_state["selfPosition"];
+        var shiftLength = 5 - selfPosition;
+        if(shiftLength < 0){
+            shiftLength += 8;
+        }
+        this.shiftArrayToRight(users_ui, shiftLength);
+        this.setState({
+            chasingTime: this.state.time,
+            users: parsed_state["users"],
+            communityCards: parsed_state["communityCards"],
+            profits: parsed_state["playersProfits"],
+            pot: parsed_state["pot"],
+            selfHand: parsed_state["selfHand"],
+            selfPosition: parsed_state["selfPosition"],
+            minimumRaiseAmount: parsed_state["minimumRaiseAmount"],
+            actionPosition: parsed_state["actionPosition"],
+            dealerPosition: parsed_state["dealerPosition"],
+            state: parsed_state["state"],
+            numActionLeft: parsed_state["numActionLeft"],
+            remainingChips: parsed_state["remainingChips"],
+            canCheck: parsed_state["canCheck"],
+            selfProfit: parsed_state["selfProfit"],
+            gameOn: parsed_state["gameOn"],
+            users_ui: users_ui,
+        })
+        console.log(parsed_state);
+        console.log("updated");
+    }
+
+    componentDidMount(){
+        this.setParsedStateToState(this.state.parsed_state);
+        //console.log(this.state);
+        this.loadData();
+        this.interval = setInterval(() => this.setState({time:this.state.time+1}), 1000);
+        
+    }
+
+    componentWillUnmount() {
+        clearInterval(this.interval);
+    }
+
+    playerUI(uri, username, remainingChips, action, handA, handB, isActive, isSelf, isEmpty, isFold, currentHandAmount, isDealer, gameOn, totalProfit, winRate, isWinner, thisPos) {
+        var userboxUri = "userbox.png";
+        if (!handA) handA = "cardback";
+        if (!handB) handB = "cardback";
+        var cardA = cardMapping(handA);
+        var cardB = cardMapping(handB);
+        if(isWinner){
+            action = "winner";
+        }
+        if(action === "null"){
+            action = "";
+        }
+        if(action === null){
+            action = "";
+        }
+        console.log(thisPos)
+    
+        if (isEmpty) {
+            return (
+                <div class="col-3 grid_item">
+                    <img onClick={()=>{this.setAlert("Please SignUp/Login To Play")}} src={userboxUri} style={{ cursor: "pointer", zIndex: "5", position: "relative", height: "125px", opacity: "80%" }}></img>
+                    <img src={"card_back.png"} style={{ visibility: "hidden", height: "85px", marginLeft: "5px", opacity: "80%" }}></img>
+                    <img src={"card_back.png"} style={{ visibility: "hidden", height: "85px", marginLeft: "5px", opacity: "80%" }}></img>
+    
+                    <img src="joinsign.png" style={{ opacity: "80%", backgroundColor: "#638596", height: "67px", width: "67px", zIndex: "1", position: "relative", marginLeft: "-212px", marginTop: "-30px" }}></img>
+                    <p className="pixel_text" style={{ opacity: "80%", color: "white", fontSize: "12px", marginTop: "-33px", marginLeft: "15px" }}>{"empty"}</p>
+                </div>)
+        }
+    
+    
+        if (isActive) {
+            userboxUri = "userbox_active.png";
+        }
+        else {
+            userboxUri = "userbox.png";
+        }
+        if (isSelf) {
+            userboxUri = "userbox_self.png";
+        }
+        return (
+    
+            <div class="col-3 grid_item">
+                <Tooltip trigger="click" placement="bottom" title={<div style={{ textAlign: "center", justifyContent: "center" }}>
+                    <img src={uri} style={{ backgroundColor: "#638596", height: "120px", width: "120px" }} alt /><br />
+                    <span className="pixel_text" style={{ color: "lightGray", fontSize: "10px", marginTop: "2px" }}>{username}</span><br />
+                    <span className="pixel_text" style={{ color: "lightGray", fontSize: "10px", marginTop: "2px" }}>{"Win Rate: "+Math.floor(winRate*100)+"%"}</span><br />
+                    <span className="pixel_text" style={{ color: "lightGray", fontSize: "10px", marginTop: "2px" }}>{"Total Profit: "+(totalProfit>0?"+":"")+totalProfit}</span>
+                </div>}>
+    
+                    <img src={userboxUri} style={{ cursor: "pointer", zIndex: "5", position: "relative", height: "125px" }}></img>
+                </Tooltip>
+                <img src={cardA} style={{ visibility: gameOn ? "visible" : "hidden" , opacity: isFold ? "50%" : "100%", height: "85px", marginLeft: "5px" }}></img>
+                <img src={cardB} style={{ visibility: gameOn ? "visible" : "hidden" , opacity: isFold ? "50%" : "100%", height: "85px", marginLeft: "5px" }}></img>
+                <img src={uri} style={{ backgroundColor: "#638596", height: "67px", width: "67px", zIndex: "1", position: "relative", marginLeft: "-212px", marginTop: "-30px" }}></img>
+    
+                <div>
+    
+                    {action == "" ? <p className="pixel_text" style={{ color: "lightGray", fontSize: "12px", marginLeft: "15px" }}>{username}</p> : <p className="pixel_text" style={{ color: isWinner ? "yellow":"red", fontSize: "12px", marginLeft: "15px" }}>{action}</p>}
+                    <p className="pixel_text" style={{ color: "white", fontSize: "12px", marginTop: "-65px", marginLeft: "15px" }}>{remainingChips}</p>
+    
+    
+                    {currentHandAmount !== 0 ? <p className="pixel_text" style={{ color: "#1ef2e7", marginTop: "-158px", marginLeft: "15px" }}><span style={{ fontSize: "15px" }}>{'🌌'}</span><span style={{ fontSize: "10px" }}>{currentHandAmount}</span></p> : <p style={{ color: "#1ef2e7", marginTop: "-158px", marginLeft: "15px", visibility: "hidden" }}>{"1"}</p>}
+                    <p className="pixel_text" style={{ visibility: isDealer ? "visible" : "hidden", fontSize: "15px", "borderRadius": "20%", "border": "solid white 2px", color: "white", "marginLeft": "75px", width: "30px", height: "30px", padding: "3px" }}><span style={{ marginLeft: "4px" }}>D</span></p><br />
+                </div>
+    
+            </div>)
+    }
+
+    setAlert = (message) => {
+        this.setState({alertVisible:true, alertMessage:message});
+        setTimeout(() => {
+            this.setState({alertVisible:false})
+          }, 3500);
+    }
+
     render() {
-        
-        setTimeout(() => {
-            this.setState({checked:true});
-        }, 1000);
-        setTimeout(() => {
-            this.setState({checked2:true});
-        }, 2000);
-        setTimeout(() => {
-            this.setState({checked3:true});
-        }, 3000);
-        setTimeout(() => {
-            this.setState({checkedPlayer:true});
-        }, 1000);
-        setTimeout(() => {
-            this.setState({checkedPlayer:true});
-        }, 1000);
-        
-        // playerUI(username, remainingChips, action, handA, handB, isActive, isSelf, isEmpty, isFold, currentHandAmount, isDealer) {
+        if(this.state.chasingTime !== this.state.time){
+            this.loadData();
+        }
+        console.log(this.state);
         const communityCards = this.state.communityCards;
+        const alertVisible = this.state.alertVisible;
+	    const alertMessage = this.state.alertMessage;
+
         return (
             <div>
                 <div class="container">
-                    
+
                     <div class="row row-cols-9">
-                        <ActionUI3 ></ActionUI3>
+                        <ActionUI3 profits={this.state.profits}></ActionUI3>
                         <div class="col grid_item_q"></div>
-                        <div class="col-4 grid_item_q"><Alert style={{height:"40px", marginTop:"5px"}} message={<p style={{ color: "black", fontSize: "8px", "marginTop": "14px" }} className="pixel_text">{"Use Full Screen For Better Experience"}</p>} type="info" closeText={<p className="pixel_text" style={{ fontSize: "12px", "marginTop": "14px"}}>X</p>} /></div>
-                        
+                        <div class="col-4 grid_item_q"><Alert style={{ height: "40px", marginTop: "5px" }} message={<p style={{ color: "black", fontSize: "9px", "marginTop": "14px" }} className="pixel_text">{"As A Guest, You Can Only Spectate The Game."}</p>} type="info" closeText={<p className="pixel_text" style={{ fontSize: "12px", "marginTop": "14px" }}>X</p>} /></div>
+
                     </div>
                     <div class="row row-cols-9">
                         <div class="col grid_item_qq"></div>
@@ -96,12 +350,11 @@ export default class SpectateBoard extends Component {
                     <div class="row row-cols-9">
                         <div class="col grid_item"></div>
                         <div class="col grid_item"></div>
-                        {playerUI("0003","test1", 12, "", "", "", false, false, false, false, 20, false, this.state.checkedPlayer)}
+                        {this.state.users_ui[0]}
                         <div class="col grid_item"></div>
-                        
-                        {playerUI("0003", "", 0, "", "", "", false, false, true, 0, false, this.state.checkedPlayer)}
+                        {this.state.users_ui[1]}
                         <div class="col grid_item"></div>
-                        {playerUI("0246","test3", 12, "", "", "", false, false, false, false, 50, true, this.state.checkedPlayer)}
+                        {this.state.users_ui[2]}
                         <div class="col grid_item"></div>
                         <div class="col grid_item"></div>
                     </div>
@@ -115,58 +368,108 @@ export default class SpectateBoard extends Component {
                         <div class="col grid_item_half"></div>
                     </div>
                     <div class="row row-cols-7">
-                        {playerUI("0303","test1", 12424, "raise", "", "", true, false, false, false, 100, false, this.state.checkedPlayer)}
+                        {this.state.users_ui[7]}
                         <div class="col grid_item"></div>
-                        {BoardUI(communityCards[0], communityCards[1], communityCards[2], communityCards[3], communityCards[4], this.state.checked, this.state.checked2, this.state.checked3)}
+                        {BoardUI(communityCards[0], communityCards[1], communityCards[2], communityCards[3], communityCards[4], this.state.state, this.state.gameOn)}
                         <div class="col grid_item"></div>
-                        {playerUI("","", 0, "", "", "", false, false, true, false, 0, false, this.state.checkedPlayer)}
+                        {this.state.users_ui[3]}
                     </div>
                     <div class="row row-cols-9">
                         <div class="col grid_item_half"></div>
                         <div class="col grid_item_half"></div>
-                        <div class="col grid_item_half"></div>
-                        <div class="col grid_item_half"><p style={{ color: "white", fontSize: "12px", "marginTop": "5px" }} className="pixel_text">Pot: {this.state.pot}</p></div>
-                        <div class="col grid_item_half"></div>
+                        <div class="col-5 grid_item_half" style={{textAlign:"center"}}><p style={{ color: "white", fontSize: "12px", "marginTop": "5px" }} className="pixel_text">{this.state.gameOn ? "Pot: "+this.state.pot : "Waiting For Game To Start..."}</p></div>
+                        
                         <div class="col grid_item_half"></div>
                         <div class="col grid_item_half"></div>
                     </div>
                     <div class="row row-cols-9">
                         <div class="col grid_item"></div>
                         <div class="col grid_item"></div>
-                        {playerUI("3531","haha", 603, "fold",  "", "", false, false, false, true, 0, false, this.state.checkedPlayer)}
+                        {this.state.users_ui[6]}
                         <div class="col grid_item"></div>
-                        {playerUI("5126","Jason", 1212, "call", "", "", false, false, false, false, 100, false, this.state.checkedPlayer)}
+                        {this.state.users_ui[5]}
                         <div class="col grid_item"></div>
-                        {playerUI("0023","mcal", 20000, "check", "", "", false, false, false, false, 0, false, this.state.checkedPlayer)}
+                        {this.state.users_ui[4]}
                         <div class="col grid_item"></div>
                         <div class="col grid_item"></div>
                     </div>
                     <div class="row row-cols-9">
                         <div class="col grid_item"></div>
-                        <div class="col grid_item"></div>
-                        <div class="col grid_item"></div>
+                        <div class="col-3 grid_item" style={{display:"flex",justifyContent:"center"}}><Alert style={{visibility:alertVisible?"visible":"hidden", height:"30px", "marginTop":"0px"}} message={<p style={{color:"black", fontSize:"9px", "marginTop":"16px"}} className="pixel_text">{alertMessage}</p>} type="error"/></div>
                     </div>
                 </div>
-
+            
+            <Link id="to_home" to="/"></Link>
+            <InitialBuyinModal ref={this.buyinModal0} position={0}/>
+            <InitialBuyinModal ref={this.buyinModal1} position={1}/>
+            <InitialBuyinModal ref={this.buyinModal2} position={2}/>
+            <InitialBuyinModal ref={this.buyinModal3} position={3}/>
+            <InitialBuyinModal ref={this.buyinModal4} position={4}/>
+            <InitialBuyinModal ref={this.buyinModal5} position={5}/>
+            <InitialBuyinModal ref={this.buyinModal6} position={6}/>
+            <InitialBuyinModal ref={this.buyinModal7} position={7}/>
             </div>
         )
     }
 
 }
 
-function playerUI(uri, username, remainingChips, action, handA, handB, isActive, isSelf, isEmpty, isFold, currentHandAmount, isDealer, checkedPlayer) {
+
+function requestJoin(position, amount, setAlert){
+    const requestOptions = {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=UTF-8' }
+    };
+    var requestUrl = `http://45.79.72.230:8080/games/join?username=${UserSession.getName()}&position=${position}&buyin=${amount}`;
+    
+    console.log(requestUrl)
+    fetch(requestUrl, requestOptions)
+    .then(response => response.text())
+    .then(
+      data => {
+        console.log(data);
+        if(data === "success"){
+          console.log(requestUrl+" success");
+        }
+        else{
+          setAlert("Action Invalid");
+        }
+      }
+    )
+    .catch(err => {
+      setAlert("Encounter Error");
+    })
+  }
+/*
+function playerUI(uri, username, remainingChips, action, handA, handB, isActive, isSelf, isEmpty, isFold, currentHandAmount, isDealer, gameOn, totalProfit, winRate, isWinner, thisPos) {
     var userboxUri = "userbox.png";
-    if (isEmpty){
+    if (!handA) handA = "cardback";
+    if (!handB) handB = "cardback";
+    var cardA = cardMapping(handA);
+    var cardB = cardMapping(handB);
+    if(isWinner){
+        action = "winner";
+    }
+    if(action === "null"){
+        action = "";
+    }
+    if(action === null){
+        action = "";
+    }
+
+    
+    if (isEmpty) {
         return (
 
-            <div class="col-3 grid_item">
-                
-                <img src={userboxUri} style={{  cursor: "pointer", zIndex:"5", position:"relative", height: "125px", opacity:"80%" }}></img>
-                <img src={"card_back.png"} style={{ visibility:"hidden",height: "85px", marginLeft: "5px", opacity:"80%" }}></img>
-                <img src={"card_back.png"} style={{visibility:"hidden", height: "85px", marginLeft: "5px", opacity:"80%" }}></img>
-                
-                <img src="joinsign.png" style={{  opacity:"80%", backgroundColor:"#638596", height: "67px", width: "67px", zIndex:"1", position:"relative", marginLeft:"-212px", marginTop:"-30px" }}></img>
-                <p className="pixel_text" style={{  opacity:"80%",color: "white", fontSize: "12px", marginTop: "-33px", marginLeft: "15px" }}>{"empty"}</p>
+            <div class="col-3 grid_item" onClick={()=>{}}>
+
+                <img src={userboxUri} style={{ cursor: "pointer", zIndex: "5", position: "relative", height: "125px", opacity: "80%" }}></img>
+                <img src={"card_back.png"} style={{ visibility: "hidden", height: "85px", marginLeft: "5px", opacity: "80%" }}></img>
+                <img src={"card_back.png"} style={{ visibility: "hidden", height: "85px", marginLeft: "5px", opacity: "80%" }}></img>
+
+                <img src="joinsign.png" style={{ opacity: "80%", backgroundColor: "#638596", height: "67px", width: "67px", zIndex: "1", position: "relative", marginLeft: "-212px", marginTop: "-30px" }}></img>
+                <p className="pixel_text" style={{ opacity: "80%", color: "white", fontSize: "12px", marginTop: "-33px", marginLeft: "15px" }}>{"empty"}</p>
+               
             </div>)
     }
 
@@ -180,96 +483,91 @@ function playerUI(uri, username, remainingChips, action, handA, handB, isActive,
     if (isSelf) {
         userboxUri = "userbox_self.png";
     }
-    if (!handA) handA = "cardback";
-    if (!handB) handB = "cardback";
-    var cardA = cardMapping(handA);
-    var cardB = cardMapping(handB);
-    
     return (
 
         <div class="col-3 grid_item">
-            <Tooltip trigger="click" placement="bottom" title={<div style={{textAlign:"center", justifyContent: "center"}}>
-                <img src={"pfps/"+uri+".png"}  style={{ backgroundColor:"#638596", height: "120px", width: "120px"}}  alt/><br/>
-                <span className="pixel_text" style={{ color: "lightGray", fontSize: "10px", marginTop:"2px"}}>{username}</span><br/>
-                <span className="pixel_text" style={{ color: "lightGray", fontSize: "10px",marginTop:"2px"}}>{"Win Rate: 23%"}</span><br/>
-                <span className="pixel_text" style={{ color: "lightGray", fontSize: "10px", marginTop:"2px"}}>{"Total Profit: 201"}</span>
-                </div>}>
-            
-            <img src={userboxUri} style={{  cursor: "pointer",  zIndex:"5", position:"relative", height: "125px" }}></img>
-            </Tooltip>
-            <img src={cardA} style={{ visibility:isFold ? "hidden": "visible", height: "85px", marginLeft: "5px" }}></img>
-            <img src={cardB} style={{ visibility:isFold ? "hidden": "visible", height: "85px", marginLeft: "5px" }}></img>
-            <img src={"pfps/"+uri+".png"} style={{ backgroundColor:"#638596", height: "67px", width: "67px", zIndex:"1", position:"relative", marginLeft:"-212px", marginTop:"-30px" }}></img>
-            
-            <div>
-                
-            {action=="" ? <p className="pixel_text" style={{ color: "lightGray", fontSize: "12px", marginLeft:"15px" }}>{username}</p> : <p className="pixel_text" style={{ color: "red", fontSize: "12px", marginLeft: "15px" }}>{action}</p>}
-            <p className="pixel_text" style={{ color: "white", fontSize: "12px", marginTop: "-65px", marginLeft: "15px" }}>{remainingChips}</p>
-            
-            
-            {currentHandAmount !== 0 ? <p className="pixel_text" style={{ color: "#1ef2e7", marginTop: "-158px", marginLeft: "15px" }}><span style={{fontSize: "15px"}}>{'🌌'}</span><span style={{fontSize: "10px"}}>{currentHandAmount}</span></p>:<p style={{ color: "#1ef2e7", marginTop: "-158px", marginLeft: "15px", visibility:"hidden" }}>{"1"}</p>}
-            <p className="pixel_text" style={{visibility:isDealer?"visible":"hidden", fontSize: "15px", "border-radius":"20%", "border":"solid white 2px", color:"white", "marginLeft":"75px", width:"30px", height:"30px", padding:"3px"}}><span style={{marginLeft:"4px"}}>D</span></p><br/>
-            </div>
-            
-        </div>)
-}
+            <Tooltip trigger="click" placement="bottom" title={<div style={{ textAlign: "center", justifyContent: "center" }}>
+                <img src={uri} style={{ backgroundColor: "#638596", height: "120px", width: "120px" }} alt /><br />
+                <span className="pixel_text" style={{ color: "lightGray", fontSize: "10px", marginTop: "2px" }}>{username}</span><br />
+                <span className="pixel_text" style={{ color: "lightGray", fontSize: "10px", marginTop: "2px" }}>{"Win Rate: "+Math.floor(winRate*100)+"%"}</span><br />
+                <span className="pixel_text" style={{ color: "lightGray", fontSize: "10px", marginTop: "2px" }}>{"Total Profit: "+(totalProfit>0?"+":"")+totalProfit}</span>
+            </div>}>
 
-function BoardUI(A, B, C, D, E, checked, checked2, checked3) {
+                <img src={userboxUri} style={{ cursor: "pointer", zIndex: "5", position: "relative", height: "125px" }}></img>
+            </Tooltip>
+            <img src={cardA} style={{ visibility: gameOn ? "visible" : "hidden" , opacity: isFold ? "50%" : "100%", height: "85px", marginLeft: "5px" }}></img>
+            <img src={cardB} style={{ visibility: gameOn ? "visible" : "hidden" , opacity: isFold ? "50%" : "100%", height: "85px", marginLeft: "5px" }}></img>
+            <img src={uri} style={{ backgroundColor: "#638596", height: "67px", width: "67px", zIndex: "1", position: "relative", marginLeft: "-212px", marginTop: "-30px" }}></img>
+
+            <div>
+
+                {action == "" ? <p className="pixel_text" style={{ color: "lightGray", fontSize: "12px", marginLeft: "15px" }}>{username}</p> : <p className="pixel_text" style={{ color: isWinner ? "yellow":"red", fontSize: "12px", marginLeft: "15px" }}>{action}</p>}
+                <p className="pixel_text" style={{ color: "white", fontSize: "12px", marginTop: "-65px", marginLeft: "15px" }}>{remainingChips}</p>
+
+
+                {currentHandAmount !== 0 ? <p className="pixel_text" style={{ color: "#1ef2e7", marginTop: "-158px", marginLeft: "15px" }}><span style={{ fontSize: "15px" }}>{'🌌'}</span><span style={{ fontSize: "10px" }}>{currentHandAmount}</span></p> : <p style={{ color: "#1ef2e7", marginTop: "-158px", marginLeft: "15px", visibility: "hidden" }}>{"1"}</p>}
+                <p className="pixel_text" style={{ visibility: isDealer ? "visible" : "hidden", fontSize: "15px", "borderRadius": "20%", "border": "solid white 2px", color: "white", "marginLeft": "75px", width: "30px", height: "30px", padding: "3px" }}><span style={{ marginLeft: "4px" }}>D</span></p><br />
+            </div>
+
+        </div>)
+}*/
+
+function BoardUI(A, B, C, D, E, state, gameOn) {
     // diamond, spade, club, heart
     // A-K (1-13)
-    
+
     return (
         < div class="col-5 grid_item">
             <div className="animate_card">
                 {
-                checked?
-                <Slide direction="up" mountOnEnter unmountOnExit  in={checked} >
-                <img src={cardMapping(A)} style={{ height: "125px", marginLeft: "5px" }}></img>
-                </Slide>:
-                <img src={"card_back.png"} style={{ height: "125px", marginLeft: "5px" }}></img>
+                    state >= 3 ?
+                        <Slide direction="up"   in={state >= 3} >
+                            <img src={cardMapping(A)} style={{ height: "125px", marginLeft: "5px" }}></img>
+                        </Slide> :
+                        <img className="fade_in_card" src={"card_back.png"} style={{ height: "125px", marginLeft: "5px" }}></img>
                 }
             </div>
             <div className="animate_card">
                 {
-                checked?
-                <Slide direction="up" mountOnEnter unmountOnExit  in={checked} >
-                <img src={cardMapping(B)} style={{ height: "125px", marginLeft: "5px" }}></img>
-                </Slide>:
-                <img src={"card_back.png"} style={{ height: "125px", marginLeft: "5px" }}></img>
+                    state >= 3 ?
+                        <Slide direction="up"   in={state >= 3} >
+                            <img src={cardMapping(B)} style={{ height: "125px", marginLeft: "5px" }}></img>
+                        </Slide> :
+                        <img className="fade_in_card" src={"card_back.png"} style={{ height: "125px", marginLeft: "5px" }}></img>
                 }
             </div>
             <div className="animate_card">
                 {
-                checked?
-                <Slide direction="up" mountOnEnter unmountOnExit  in={checked} >
-                <img src={cardMapping(C)} style={{ height: "125px", marginLeft: "5px" }}></img>
-                </Slide>:
-                <img src={"card_back.png"} style={{ height: "125px", marginLeft: "5px" }}></img>
+                    state >= 3 ?
+                        <Slide direction="up"   in={state >= 3} >
+                            <img src={cardMapping(C)} style={{ height: "125px", marginLeft: "5px" }}></img>
+                        </Slide> :
+                        <img className="fade_in_card" src={"card_back.png"} style={{ height: "125px", marginLeft: "5px" }}></img>
                 }
             </div>
             <div className="animate_card">
                 {
-                checked2?
-                <Slide direction="up" mountOnEnter unmountOnExit  in={checked2} >
-                <img src={cardMapping(D)} style={{ height: "125px", marginLeft: "5px" }}></img>
-                </Slide>:
-                <img src={"card_back.png"} style={{ height: "125px", marginLeft: "5px" }}></img>
+                    state >= 4 ?
+                        <Slide direction="up"   in={state >= 4} >
+                            <img src={cardMapping(D)} style={{ height: "125px", marginLeft: "5px" }}></img>
+                        </Slide> :
+                        <img className="fade_in_card" src={"card_back.png"} style={{ height: "125px", marginLeft: "5px" }}></img>
                 }
             </div>
             <div className="animate_card">
                 {
-                checked3?
-                <Slide direction="up" mountOnEnter unmountOnExit  in={checked3} >
-                <img src={cardMapping(E)} style={{ height: "125px", marginLeft: "5px" }}></img>
-                </Slide>:
-                <img src={"card_back.png"} style={{ height: "125px", marginLeft: "5px" }}></img>
+                    state >= 5 ?
+                        <Slide direction="up"   in={state >= 5} >
+                            <img src={cardMapping(E)} style={{ height: "125px", marginLeft: "5px" }}></img>
+                        </Slide> :
+                        <img className="fade_in_card" src={"card_back.png"} style={{ height: "125px", marginLeft: "5px" }}></img>
                 }
             </div>
         </div >)
 }
 
 function cardMapping(card) {
-    if (card === null){
+    if (card === null) {
         return "card_back.png"
     }
     if (card === "cardback") {

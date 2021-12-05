@@ -36,12 +36,12 @@ export default class InitialBuyinModal extends React.Component {
                         console.log(requestUrl + " success");
                     }
                     else {
-                        setAlert("Action Invalid");
+                        this.setAlert("Action Invalid");
                     }
                 }
             )
             .catch(err => {
-                setAlert("Encounter Error");
+                this.setAlert("Encounter Error");
             })
     }
 
@@ -58,10 +58,11 @@ export default class InitialBuyinModal extends React.Component {
         })
     }
     handleConfirm = () => {
-        this.requestJoin(this.props.position, this.state.value, this.setAlert)
         this.setState({
             visible: false
         })
+        this.requestJoin(this.props.position, this.state.value, this.setAlert)
+        this.state.visible = false;
     }
     handleSliderChange = (event, newValue) => {
         this.setState({value:newValue})

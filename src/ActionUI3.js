@@ -21,14 +21,14 @@ export default class ActionUI2 extends React.Component {
     return (
       <>
         <div class="col grid_item_q">
-            <Tooltip trigger="click" placement="bottom" title={<div style={{textAlign:"center", justifyContent: "center"}}>
-                <span className="pixel_text" style={{ color: "lightGray", fontSize: "10px", marginTop:"2px"}}>{"Steven: +500"}</span><br/>
-                <span className="pixel_text" style={{ color: "lightGray", fontSize: "10px", marginTop:"2px"}}>{"Jason: +400"}</span><br/>
-                <span className="pixel_text" style={{ color: "lightGray", fontSize: "10px", marginTop:"2px"}}>{"Thomas: +210"}</span><br/>
-                <span className="pixel_text" style={{ color: "lightGray", fontSize: "10px", marginTop:"2px"}}>{"Peter: +200"}</span><br/>
-                <span className="pixel_text" style={{ color: "lightGray", fontSize: "10px", marginTop:"2px"}}>{"Test1: -200"}</span><br/>
-                <span className="pixel_text" style={{ color: "lightGray", fontSize: "10px", marginTop:"2px"}}>{"Test2: -200"}</span><br/>
-                <span className="pixel_text" style={{ color: "lightGray", fontSize: "10px", marginTop:"2px"}}>{"Test3: -200"}</span><br/>
+            <div className="action_button2" onClick={()=>{
+              var linkToClick = document.getElementById('to_home');
+              linkToClick.click();}
+            }><p style={{ color: "white", fontSize: "8px", marginLeft: "-20px" }} className="pixel_text">Leave</p></div>
+            <Tooltip key={this.props.profits} trigger="click" placement="bottom" title={<div style={{textAlign:"center", justifyContent: "center"}}>
+              {
+                  this.props.profits.map(each => <div><span className="pixel_text" style={{ color: "lightGray", fontSize: "10px", marginTop:"2px"}}>{each}</span><br/></div>)
+              }
                 </div>}>
                 <div className="action_button2" onClick={() => { }}><p style={{ color: "white", fontSize: "8px", marginLeft: "-20px" }} className="pixel_text">Stats</p></div>
             </Tooltip>
