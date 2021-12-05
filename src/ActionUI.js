@@ -73,7 +73,11 @@ export default class ActionUI extends React.Component {
     return (
       <>
         <div class="col grid_item_q">
-            <div className="action_button" onClick={() => {this.requestAction("fold", 0, this.props.setAlert)}}><p style={{ color: "white", fontSize: "8px", marginLeft: "-20px" }} className="pixel_text">Fold</p></div>
+            {
+            this.props.canCheck ?
+            <div className="action_button" onClick={() => {this.requestAction("fold", 0, this.props.setAlert)}}><p style={{ color: "white", fontSize: "8px", marginLeft: "-20px" }} className="pixel_text">Fold</p></div>:
+            null
+            } 
             {
               this.props.canCheck ?
               <div key={this.props.canCheck} className="action_button" onClick={() => {this.requestAction("check", 0, this.props.setAlert)}}><p style={{ color: "white", fontSize: "8px", marginLeft: "-20px" }} className="pixel_text">{"Check"}</p></div>:
