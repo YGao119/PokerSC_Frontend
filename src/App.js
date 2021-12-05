@@ -43,7 +43,10 @@ function requestSignUp(username, password, setAlert){
         method: 'POST',
         headers: { 'Content-Type': 'text/plain;charset=UTF-8' }
     };
-	var randInt = getRandomInt(10200);
+	var randInt = getRandomInt(10200)+"";
+	while(randInt.length < 4){
+		randInt = "0"+randInt;
+	}
 	var pfpUri = "pfps/"+randInt+".png";
 	const requestUrl = `http://45.79.72.230:8080/signup?username=${username}&password=${password}&profile_url=${pfpUri}`;
     fetch(requestUrl, requestOptions)

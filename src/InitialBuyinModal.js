@@ -60,8 +60,7 @@ export default class InitialBuyinModal extends React.Component {
     handleConfirm = () => {
         this.requestJoin(this.props.position, this.state.value, this.setAlert)
         this.setState({
-            visible: false,
-            alertVisible: false
+            visible: false
         })
     }
     handleSliderChange = (event, newValue) => {

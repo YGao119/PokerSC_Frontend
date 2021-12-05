@@ -73,7 +73,8 @@ export default class Board extends Component {
                 this.playerUI("", "", 0, "", "", "", false, false, true, false, 0, false, false, 0, 0, 7),
             ],
             time:0,
-            buyinPos: -1
+            buyinPos: -1,
+
         };
     }
 
@@ -96,7 +97,7 @@ export default class Board extends Component {
             this.buyinModal4.current.setBuyinModal();
         }
         if(position === 5){
-            this.buyinModal6.current.setBuyinModal();
+            this.buyinModal5.current.setBuyinModal();
         }
         if(position === 6){
             this.buyinModal6.current.setBuyinModal();

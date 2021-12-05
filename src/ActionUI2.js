@@ -71,12 +71,12 @@ export default class ActionUI2 extends React.Component {
     .then(
       data => {
         console.log(data);
+        if(action === "leave"){
+          var linkToClick = document.getElementById('to_home');
+          linkToClick.click();
+        }
         if(data !== "failure"){
           console.log(requestUrl+" success");
-          if(action === "leave"){
-            var linkToClick = document.getElementById('to_home');
-					  linkToClick.click();
-          }
         }
         else{
           setAlert("Action Invalid");
