@@ -30,6 +30,10 @@ export default class ActionUI2 extends React.Component {
   };
 
   handleConfirm = () => {
+    if(!this.props.canLeave){
+      this.setAlert("You Can Rebuy After The Hand Ends");
+      return;
+    }
     this.requestAction('buyin', this.state.value, this.setAlert);
   };
 
@@ -46,7 +50,7 @@ export default class ActionUI2 extends React.Component {
   handleConfirm2 = () => {
     console.log("leaveeeee"+this.props.canLeave)
     if(!this.props.canLeave){
-      this.setAlert("You Can Only Leave After The Hand Ends");
+      this.setAlert("You Can Leave After The Hand Ends");
       return;
     }
     this.requestAction('leave', 0, this.setAlert);
@@ -80,8 +84,11 @@ export default class ActionUI2 extends React.Component {
           var linkToClick = document.getElementById('to_home');
           linkToClick.click();
         }
-        if(data !== "failure"){
-          console.log(requestUrl+" success");
+        else if(data === "chips exceeded"){
+          setAlert("Remaining Chips Cannot Exceed 1200")
+        }
+        else if(data === "success"){
+          this.handleCancel()
         }
         else{
           setAlert("Action Invalid");
