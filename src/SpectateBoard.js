@@ -287,7 +287,7 @@ export default class SpectateBoard extends Component {
                     {currentHandAmount !== 0 ? <p className="pixel_text" style={{ color: "#1ef2e7", marginTop: "-158px", marginLeft: "15px" }}><span style={{ fontSize: "15px" }}>{'🌌'}</span><span style={{ fontSize: "10px" }}>{currentHandAmount}</span></p> : <p style={{ color: "#1ef2e7", marginTop: "-158px", marginLeft: "15px", visibility: "hidden" }}>{"1"}</p>}
                     <p className="pixel_text" style={{ visibility: isDealer ? "visible" : "hidden", fontSize: "15px", "borderRadius": "20%", "border": "solid white 2px", color: "white", "marginLeft": "75px", width: "30px", height: "30px", padding: "3px" }}><span style={{ marginLeft: "4px" }}>D</span></p><br />
                 </div>
-                {emoji !== -1 && emoji!== undefined ? <img src={`p_emojis/${emoji}.png`} style={{cursor:"pointer", height: "65px", width: "65px", zIndex: "5", position: "relative", marginLeft: "14px", marginTop: "-180px" }}></img> : null}
+                {emoji !== -1 && emoji!== undefined ? <img className="emoji" src={`p_emojis/${emoji}.png`} style={{cursor:"pointer", height: "65px", width: "65px", zIndex: "5", position: "relative", marginLeft: "14px", marginTop: "-180px" }}></img> : null}
     
             </div>)
     }
