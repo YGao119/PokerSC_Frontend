@@ -64,14 +64,14 @@ export default class Board extends Component {
             alertMessage: "",
             gameOn: false,
             users_ui: [
-                this.playerUI("", "", 0, "", "", "", false, false, true, false, 0, false, false, 0, 0, 0),
-                this.playerUI("", "", 0, "", "", "", false, false, true, false, 0, false, false, 0, 0, 1),
-                this.playerUI("", "", 0, "", "", "", false, false, true, false, 0, false, false, 0, 0, 2),
-                this.playerUI("", "", 0, "", "", "", false, false, true, false, 0, false, false, 0, 0, 3),
-                this.playerUI("", "", 0, "", "", "", false, false, true, false, 0, false, false, 0, 0, 4),
-                this.playerUI("", "", 0, "", "", "", false, false, true, false, 0, false, false, 0, 0, 5),
-                this.playerUI("", "", 0, "", "", "", false, false, true, false, 0, false, false, 0, 0, 6),
-                this.playerUI("", "", 0, "", "", "", false, false, true, false, 0, false, false, 0, 0, 7),
+                this.playerUI("", "", 0, "", "", "", false, false, true, false, 0, false, false, 0, 0, 0, -1),
+                this.playerUI("", "", 0, "", "", "", false, false, true, false, 0, false, false, 0, 0, 1, -1),
+                this.playerUI("", "", 0, "", "", "", false, false, true, false, 0, false, false, 0, 0, 2, -1),
+                this.playerUI("", "", 0, "", "", "", false, false, true, false, 0, false, false, 0, 0, 3, -1),
+                this.playerUI("", "", 0, "", "", "", false, false, true, false, 0, false, false, 0, 0, 4, -1),
+                this.playerUI("", "", 0, "", "", "", false, false, true, false, 0, false, false, 0, 0, 5, -1),
+                this.playerUI("", "", 0, "", "", "", false, false, true, false, 0, false, false, 0, 0, 6, -1),
+                this.playerUI("", "", 0, "", "", "", false, false, true, false, 0, false, false, 0, 0, 7, -1),
             ],
             time:0,
             buyinPos: -1,
@@ -110,40 +110,11 @@ export default class Board extends Component {
         if(position === 7){
             this.buyinModal7.current.setBuyinModal();
         }
-        /*
-        switch(position){
-            case 0:
-                this.buyinModal0.current.setBuyinModal();
-                break;
-            case 1:
-                this.buyinModal1.current.setBuyinModal();
-                break;
-            case 2:
-                this.buyinModal2.current.setBuyinModal();
-                break;
-            case 3:
-                this.buyinModal3.current.setBuyinModal();
-                break;
-            case 4:
-                this.buyinModal4.current.setBuyinModal();
-                break;
-            case 5:
-                this.buyinModal5.current.setBuyinModal();
-                break;
-            case 6:
-                this.buyinModal6.current.setBuyinModal();
-                break;
-            case 7:
-                this.buyinModal7.current.setBuyinModal();
-                break;
-        }*/
     }
 
     getUserUI(user, gameOn, position){
-        console.log(user);
-        console.log(position);
         if(user == null){
-            return this.playerUI("", "", 0, "", "", "", false, false, true, false, 0, false, false, 0, 0, false, position);
+            return this.playerUI("", "", 0, "", "", "", false, false, true, false, 0, false, false, 0, 0, false, position, -1);
         }
         else{
             return this.playerUI(
@@ -163,7 +134,8 @@ export default class Board extends Component {
                 user["totalProfit"], 
                 user["winRate"],
                 user["isWinner"],
-                position
+                position,
+                user["emoji"]
             );
         }
     }
@@ -180,14 +152,11 @@ export default class Board extends Component {
         .then(response => response.text())
         .then(
             data => {
-            //console.log(data);
+            console.log(data);
             if(data !== "no user found"){
                 console.log(requestUrl+" success");
-                console.log(data);
                 const parsed_state = JSON.parse(data);
-                console.log(parsed_state);
                 this.setParsedStateToState(parsed_state);
-                console.log("updated2");
             }
             else{
                 //alert("no user found");
@@ -239,8 +208,6 @@ export default class Board extends Component {
             timeLeft: parsed_state["timeLeft"],
             canLeave: parsed_state["canLeave"],
         })
-        console.log(parsed_state);
-        console.log("updated");
     }
 
     componentDidMount(){
@@ -267,7 +234,6 @@ export default class Board extends Component {
         .then(response => response.text())
         .then(
             data => {
-            console.log(data);
             if(data !== "failure"){
                 console.log(requestUrl+" success");
             }
@@ -284,7 +250,7 @@ export default class Board extends Component {
         window.removeEventListener('beforeunload', this.handleUnload);
     }
 
-    playerUI(uri, username, remainingChips, action, handA, handB, isActive, isSelf, isEmpty, isFold, currentHandAmount, isDealer, gameOn, totalProfit, winRate, isWinner, thisPos) {
+    playerUI(uri, username, remainingChips, action, handA, handB, isActive, isSelf, isEmpty, isFold, currentHandAmount, isDealer, gameOn, totalProfit, winRate, isWinner, thisPos, emoji) {
         var userboxUri = "userbox.png";
         if (!handA) handA = "cardback";
         if (!handB) handB = "cardback";
@@ -323,32 +289,48 @@ export default class Board extends Component {
         if (isActive) {
             userboxUri = "userbox_active.png";
         }
+        console.log("emoji"+emoji)
         return (
-    
             <div class="col-3 grid_item">
                 <Tooltip trigger="click" placement="bottom" title={<div style={{ textAlign: "center", justifyContent: "center" }}>
                     <img src={uri} style={{ backgroundColor: "#638596", height: "120px", width: "120px" }} alt /><br />
                     <span className="pixel_text" style={{ color: "lightGray", fontSize: "10px", marginTop: "2px" }}>{username}</span><br />
                     <span className="pixel_text" style={{ color: "lightGray", fontSize: "10px", marginTop: "2px" }}>{"Win Rate: "+Math.floor(winRate*100)+"%"}</span><br />
                     <span className="pixel_text" style={{ color: "lightGray", fontSize: "10px", marginTop: "2px" }}>{"Total Profit: "+(totalProfit>0?"+":"")+totalProfit}</span>
+                    
+                    {isSelf?
+                    <>
+                    <br/>
+                    <img src={`p_emojis/1.png`} onClick={()=>{requestEmoji(1);document.getElementById(`user${this.state.selfPosition}`).click();}} style={{cursor:"pointer", height: "40px", width: "40px", zIndex: "5", position: "relative", display:"inline-block"}}></img> 
+                    <img src={`p_emojis/2.png`} onClick={()=>{requestEmoji(2);document.getElementById(`user${this.state.selfPosition}`).click();}} style={{cursor:"pointer", height: "40px", width: "40px", zIndex: "5", position: "relative", display:"inline-block"}}></img> 
+                    <img src={`p_emojis/3.png`} onClick={()=>{requestEmoji(3);document.getElementById(`user${this.state.selfPosition}`).click();}} style={{cursor:"pointer", height: "40px", width: "40px", zIndex: "5", position: "relative", display:"inline-block"}}></img> 
+                    <img src={`p_emojis/4.png`} onClick={()=>{requestEmoji(4);document.getElementById(`user${this.state.selfPosition}`).click();}} style={{cursor:"pointer", height: "40px", width: "40px", zIndex: "5", position: "relative", display:"inline-block"}}></img> 
+                    <br/>
+                    <img src={`p_emojis/5.png`} onClick={()=>{requestEmoji(5);document.getElementById(`user${this.state.selfPosition}`).click();}} style={{cursor:"pointer", height: "40px", width: "40px", zIndex: "5", position: "relative", display:"inline-block"}}></img> 
+                    <img src={`p_emojis/6.png`} onClick={()=>{requestEmoji(6);document.getElementById(`user${this.state.selfPosition}`).click();}} style={{cursor:"pointer", height: "40px", width: "40px", zIndex: "5", position: "relative", display:"inline-block"}}></img> 
+                    <img src={`p_emojis/7.png`} onClick={()=>{requestEmoji(7);document.getElementById(`user${this.state.selfPosition}`).click();}} style={{cursor:"pointer", height: "40px", width: "40px", zIndex: "5", position: "relative", display:"inline-block"}}></img> 
+                    <img src={`p_emojis/8.png`} onClick={()=>{requestEmoji(8);document.getElementById(`user${this.state.selfPosition}`).click();}} style={{cursor:"pointer", height: "40px", width: "40px", zIndex: "5", position: "relative", display:"inline-block"}}></img> 
+                    </>
+                    :null}
                 </div>}>
     
-                    <img src={userboxUri} style={{ cursor: "pointer", zIndex: "5", position: "relative", height: "125px" }}></img>
-                </Tooltip>
+                    <img id={`user${thisPos}`} onClick={()=>{console.log(`user${thisPos} clicked`)}} src={userboxUri} style={{ cursor: "pointer", zIndex: "5", position: "relative", height: "125px" }}></img>
+
                 <img src={cardA} style={{ visibility: gameOn ? "visible" : "hidden" , opacity: isFold ? "50%" : "100%", height: "85px", marginLeft: "5px" }}></img>
                 <img src={cardB} style={{ visibility: gameOn ? "visible" : "hidden" , opacity: isFold ? "50%" : "100%", height: "85px", marginLeft: "5px" }}></img>
                 <img src={uri} style={{ backgroundColor: "#638596", height: "67px", width: "67px", zIndex: "1", position: "relative", marginLeft: "-212px", marginTop: "-30px" }}></img>
-    
                 <div>
     
                     {action == "" ? <p className="pixel_text" style={{ color: "lightGray", fontSize: "12px", marginLeft: "15px" }}>{username}</p> : <p className="pixel_text" style={{ color: isWinner ? "yellow":"red", fontSize: "12px", marginLeft: "15px" }}>{action}</p>}
                     <p className="pixel_text" style={{ color: "white", fontSize: "12px", marginTop: "-65px", marginLeft: "15px" }}>{remainingChips}</p>
     
     
-                    {currentHandAmount !== 0 ? <p className="pixel_text" style={{ color: "#1ef2e7", marginTop: "-158px", marginLeft: "15px" }}><span style={{ fontSize: "15px" }}>{'🌌'}</span><span style={{ fontSize: "10px" }}>{currentHandAmount}</span></p> : <p style={{ color: "#1ef2e7", marginTop: "-158px", marginLeft: "15px", visibility: "hidden" }}>{"1"}</p>}
+                    {currentHandAmount !== 0 ? <p className="pixel_text" style={{ color: "#1ef2e7", marginTop: "-158px", marginLeft: "15px" }}><span style={{ fontSize: "15px" }}>{'💎'}</span><span style={{ fontSize: "10px" }}>{currentHandAmount}</span></p> : <p style={{ color: "#1ef2e7", marginTop: "-158px", marginLeft: "15px", visibility: "hidden" }}>{"1"}</p>}
                     <p className="pixel_text" style={{ visibility: isDealer ? "visible" : "hidden", fontSize: "15px", "borderRadius": "20%", "border": "solid white 2px", color: "white", "marginLeft": "75px", width: "30px", height: "30px", padding: "3px" }}><span style={{ marginLeft: "4px" }}>D</span></p><br />
                 </div>
-    
+                {emoji !== -1 && emoji!== undefined ? <img className="emoji" src={`p_emojis/${emoji}.png`} style={{cursor:"pointer", height: "65px", width: "65px", zIndex: "5", position: "relative", marginLeft: "14px", marginTop: "-180px" }}></img> : null}
+                
+                </Tooltip>
             </div>)
     }
 
@@ -363,7 +345,6 @@ export default class Board extends Component {
         if(this.state.chasingTime !== this.state.time){
             this.loadData();
         }
-        console.log(this.state);
         const communityCards = this.state.communityCards;
         const alertVisible = this.state.alertVisible;
 	    const alertMessage = this.state.alertMessage;
@@ -466,7 +447,6 @@ function requestJoin(position, amount, setAlert){
     .then(response => response.text())
     .then(
       data => {
-        console.log(data);
         if(data === "success"){
           console.log(requestUrl+" success");
         }
@@ -478,78 +458,26 @@ function requestJoin(position, amount, setAlert){
     .catch(err => {
       setAlert("Encounter Error");
     })
-  }
-/*
-function playerUI(uri, username, remainingChips, action, handA, handB, isActive, isSelf, isEmpty, isFold, currentHandAmount, isDealer, gameOn, totalProfit, winRate, isWinner, thisPos) {
-    var userboxUri = "userbox.png";
-    if (!handA) handA = "cardback";
-    if (!handB) handB = "cardback";
-    var cardA = cardMapping(handA);
-    var cardB = cardMapping(handB);
-    if(isWinner){
-        action = "winner";
-    }
-    if(action === "null"){
-        action = "";
-    }
-    if(action === null){
-        action = "";
-    }
+}
 
+function requestEmoji(emoji){
+    const requestOptions = {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=UTF-8' }
+    };
+    var requestUrl = `http://45.79.72.230:8080/games/emoji?username=${UserSession.getName()}&emoji=${emoji}`;
     
-    if (isEmpty) {
-        return (
-
-            <div class="col-3 grid_item" onClick={()=>{}}>
-
-                <img src={userboxUri} style={{ cursor: "pointer", zIndex: "5", position: "relative", height: "125px", opacity: "80%" }}></img>
-                <img src={"card_back.png"} style={{ visibility: "hidden", height: "85px", marginLeft: "5px", opacity: "80%" }}></img>
-                <img src={"card_back.png"} style={{ visibility: "hidden", height: "85px", marginLeft: "5px", opacity: "80%" }}></img>
-
-                <img src="joinsign.png" style={{ opacity: "80%", backgroundColor: "#638596", height: "67px", width: "67px", zIndex: "1", position: "relative", marginLeft: "-212px", marginTop: "-30px" }}></img>
-                <p className="pixel_text" style={{ opacity: "80%", color: "white", fontSize: "12px", marginTop: "-33px", marginLeft: "15px" }}>{"empty"}</p>
-               
-            </div>)
-    }
-
-
-    if (isActive) {
-        userboxUri = "userbox_active.png";
-    }
-    else {
-        userboxUri = "userbox.png";
-    }
-    if (isSelf) {
-        userboxUri = "userbox_self.png";
-    }
-    return (
-
-        <div class="col-3 grid_item">
-            <Tooltip trigger="click" placement="bottom" title={<div style={{ textAlign: "center", justifyContent: "center" }}>
-                <img src={uri} style={{ backgroundColor: "#638596", height: "120px", width: "120px" }} alt /><br />
-                <span className="pixel_text" style={{ color: "lightGray", fontSize: "10px", marginTop: "2px" }}>{username}</span><br />
-                <span className="pixel_text" style={{ color: "lightGray", fontSize: "10px", marginTop: "2px" }}>{"Win Rate: "+Math.floor(winRate*100)+"%"}</span><br />
-                <span className="pixel_text" style={{ color: "lightGray", fontSize: "10px", marginTop: "2px" }}>{"Total Profit: "+(totalProfit>0?"+":"")+totalProfit}</span>
-            </div>}>
-
-                <img src={userboxUri} style={{ cursor: "pointer", zIndex: "5", position: "relative", height: "125px" }}></img>
-            </Tooltip>
-            <img src={cardA} style={{ visibility: gameOn ? "visible" : "hidden" , opacity: isFold ? "50%" : "100%", height: "85px", marginLeft: "5px" }}></img>
-            <img src={cardB} style={{ visibility: gameOn ? "visible" : "hidden" , opacity: isFold ? "50%" : "100%", height: "85px", marginLeft: "5px" }}></img>
-            <img src={uri} style={{ backgroundColor: "#638596", height: "67px", width: "67px", zIndex: "1", position: "relative", marginLeft: "-212px", marginTop: "-30px" }}></img>
-
-            <div>
-
-                {action == "" ? <p className="pixel_text" style={{ color: "lightGray", fontSize: "12px", marginLeft: "15px" }}>{username}</p> : <p className="pixel_text" style={{ color: isWinner ? "yellow":"red", fontSize: "12px", marginLeft: "15px" }}>{action}</p>}
-                <p className="pixel_text" style={{ color: "white", fontSize: "12px", marginTop: "-65px", marginLeft: "15px" }}>{remainingChips}</p>
-
-
-                {currentHandAmount !== 0 ? <p className="pixel_text" style={{ color: "#1ef2e7", marginTop: "-158px", marginLeft: "15px" }}><span style={{ fontSize: "15px" }}>{'🌌'}</span><span style={{ fontSize: "10px" }}>{currentHandAmount}</span></p> : <p style={{ color: "#1ef2e7", marginTop: "-158px", marginLeft: "15px", visibility: "hidden" }}>{"1"}</p>}
-                <p className="pixel_text" style={{ visibility: isDealer ? "visible" : "hidden", fontSize: "15px", "borderRadius": "20%", "border": "solid white 2px", color: "white", "marginLeft": "75px", width: "30px", height: "30px", padding: "3px" }}><span style={{ marginLeft: "4px" }}>D</span></p><br />
-            </div>
-
-        </div>)
-}*/
+    console.log(requestUrl)
+    fetch(requestUrl, requestOptions)
+    .then(response => response.text())
+    .then(
+      data => {
+      }
+    )
+    .catch(err => {
+      console.log(err);
+    })
+}
 
 function BoardUI(A, B, C, D, E, state, gameOn) {
     // diamond, spade, club, heart

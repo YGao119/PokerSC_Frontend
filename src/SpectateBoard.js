@@ -64,14 +64,14 @@ export default class SpectateBoard extends Component {
             alertMessage: "",
             gameOn: false,
             users_ui: [
-                this.playerUI("", "", 0, "", "", "", false, false, true, false, 0, false, false, 0, 0, 0),
-                this.playerUI("", "", 0, "", "", "", false, false, true, false, 0, false, false, 0, 0, 1),
-                this.playerUI("", "", 0, "", "", "", false, false, true, false, 0, false, false, 0, 0, 2),
-                this.playerUI("", "", 0, "", "", "", false, false, true, false, 0, false, false, 0, 0, 3),
-                this.playerUI("", "", 0, "", "", "", false, false, true, false, 0, false, false, 0, 0, 4),
-                this.playerUI("", "", 0, "", "", "", false, false, true, false, 0, false, false, 0, 0, 5),
-                this.playerUI("", "", 0, "", "", "", false, false, true, false, 0, false, false, 0, 0, 6),
-                this.playerUI("", "", 0, "", "", "", false, false, true, false, 0, false, false, 0, 0, 7),
+                this.playerUI("", "", 0, "", "", "", false, false, true, false, 0, false, false, 0, 0, 0, -1),
+                this.playerUI("", "", 0, "", "", "", false, false, true, false, 0, false, false, 0, 0, 1, -1),
+                this.playerUI("", "", 0, "", "", "", false, false, true, false, 0, false, false, 0, 0, 2, -1),
+                this.playerUI("", "", 0, "", "", "", false, false, true, false, 0, false, false, 0, 0, 3, -1),
+                this.playerUI("", "", 0, "", "", "", false, false, true, false, 0, false, false, 0, 0, 4, -1),
+                this.playerUI("", "", 0, "", "", "", false, false, true, false, 0, false, false, 0, 0, 5, -1),
+                this.playerUI("", "", 0, "", "", "", false, false, true, false, 0, false, false, 0, 0, 6, -1),
+                this.playerUI("", "", 0, "", "", "", false, false, true, false, 0, false, false, 0, 0, 7, -1),
             ],
             time:0,
             buyinPos: -1,
@@ -106,40 +106,13 @@ export default class SpectateBoard extends Component {
         if(position === 7){
             this.buyinModal7.current.setBuyinModal();
         }
-        /*
-        switch(position){
-            case 0:
-                this.buyinModal0.current.setBuyinModal();
-                break;
-            case 1:
-                this.buyinModal1.current.setBuyinModal();
-                break;
-            case 2:
-                this.buyinModal2.current.setBuyinModal();
-                break;
-            case 3:
-                this.buyinModal3.current.setBuyinModal();
-                break;
-            case 4:
-                this.buyinModal4.current.setBuyinModal();
-                break;
-            case 5:
-                this.buyinModal5.current.setBuyinModal();
-                break;
-            case 6:
-                this.buyinModal6.current.setBuyinModal();
-                break;
-            case 7:
-                this.buyinModal7.current.setBuyinModal();
-                break;
-        }*/
     }
 
     getUserUI(user, gameOn, position){
         console.log(user);
         console.log(position);
         if(user == null){
-            return this.playerUI("", "", 0, "", "", "", false, false, true, false, 0, false, false, 0, 0, false, position);
+            return this.playerUI("", "", 0, "", "", "", false, false, true, false, 0, false, false, 0, 0, false, position, -1);
         }
         else{
             return this.playerUI(
@@ -159,7 +132,8 @@ export default class SpectateBoard extends Component {
                 user["totalProfit"], 
                 user["winRate"],
                 user["isWinner"],
-                position
+                position,
+                user["emoji"]
             );
         }
     }
@@ -249,7 +223,7 @@ export default class SpectateBoard extends Component {
         clearInterval(this.interval);
     }
 
-    playerUI(uri, username, remainingChips, action, handA, handB, isActive, isSelf, isEmpty, isFold, currentHandAmount, isDealer, gameOn, totalProfit, winRate, isWinner, thisPos) {
+    playerUI(uri, username, remainingChips, action, handA, handB, isActive, isSelf, isEmpty, isFold, currentHandAmount, isDealer, gameOn, totalProfit, winRate, isWinner, thisPos, emoji) {
         var userboxUri = "userbox.png";
         if (!handA) handA = "cardback";
         if (!handB) handB = "cardback";
@@ -313,6 +287,7 @@ export default class SpectateBoard extends Component {
                     {currentHandAmount !== 0 ? <p className="pixel_text" style={{ color: "#1ef2e7", marginTop: "-158px", marginLeft: "15px" }}><span style={{ fontSize: "15px" }}>{'🌌'}</span><span style={{ fontSize: "10px" }}>{currentHandAmount}</span></p> : <p style={{ color: "#1ef2e7", marginTop: "-158px", marginLeft: "15px", visibility: "hidden" }}>{"1"}</p>}
                     <p className="pixel_text" style={{ visibility: isDealer ? "visible" : "hidden", fontSize: "15px", "borderRadius": "20%", "border": "solid white 2px", color: "white", "marginLeft": "75px", width: "30px", height: "30px", padding: "3px" }}><span style={{ marginLeft: "4px" }}>D</span></p><br />
                 </div>
+                {emoji !== -1 && emoji!== undefined ? <img src={`p_emojis/${emoji}.png`} style={{cursor:"pointer", height: "65px", width: "65px", zIndex: "5", position: "relative", marginLeft: "14px", marginTop: "-180px" }}></img> : null}
     
             </div>)
     }

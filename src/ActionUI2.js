@@ -30,10 +30,6 @@ export default class ActionUI2 extends React.Component {
   };
 
   handleConfirm = () => {
-    if(!this.props.canLeave){
-      this.setAlert("You Can Rebuy After The Hand Ends");
-      return;
-    }
     this.requestAction('buyin', this.state.value, this.setAlert);
   };
 
@@ -89,6 +85,9 @@ export default class ActionUI2 extends React.Component {
         }
         else if(data === "success"){
           this.handleCancel()
+        }
+        else if(data === "player is active"){
+          setAlert("You Cannot Rebuy While Playing The Hand");
         }
         else{
           setAlert("Action Invalid");

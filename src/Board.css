@@ -110,5 +110,18 @@
 	display: inline-block;
 }
 
-.fade_in_card{
+.emoji{
+	animation: emojisUpDown 0.25s infinite
+}
+
+@keyframes emojisUpDown {
+	0%{
+		margin-top: -182px;
+	}
+	50%{
+		margin-top: -178px;
+	}
+	100%{
+		margin-top: -182px;
+	}
 }
