@@ -237,6 +237,7 @@ export default class Board extends Component {
             gameOn: parsed_state["gameOn"],
             users_ui: users_ui,
             timeLeft: parsed_state["timeLeft"],
+            canLeave: parsed_state["canLeave"],
         })
         console.log(parsed_state);
         console.log("updated");
@@ -372,7 +373,7 @@ export default class Board extends Component {
                 <div class="container">
 
                     <div class="row row-cols-9">
-                        <ActionUI2 min={200} max={1200} profits={this.state.profits} selfProfit={this.state.selfProfit}></ActionUI2> {/*todo, max*/}
+                        <ActionUI2 canLeave={this.state.canLeave} min={200} max={1200} profits={this.state.profits} selfProfit={this.state.selfProfit}></ActionUI2> {/*todo, max*/}
                         <div class="col grid_item_q"></div>
                         <div class="col-4 grid_item_q"><Alert style={{ height: "40px", marginTop: "5px" }} message={<p style={{ color: "black", fontSize: "9px", "marginTop": "14px" }} className="pixel_text">{"Use Full Screen For Better Experience"}</p>} type="info" closeText={<p className="pixel_text" style={{ fontSize: "12px", "marginTop": "14px" }}>X</p>} /></div>
 

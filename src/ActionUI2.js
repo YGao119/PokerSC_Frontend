@@ -44,6 +44,11 @@ export default class ActionUI2 extends React.Component {
   };
 
   handleConfirm2 = () => {
+    console.log("leaveeeee"+this.props.canLeave)
+    if(!this.props.canLeave){
+      this.setAlert("You Can Only Leave After The Hand Ends");
+      return;
+    }
     this.requestAction('leave', 0, this.setAlert);
   };
 
@@ -157,6 +162,7 @@ export default class ActionUI2 extends React.Component {
         </Modal>
 
         <Modal
+          key={this.props.canLeave}
           visible={this.state.visible2}
           title={<p style={{color:"black", fontSize:"12px",  "marginTop":"-9px"}} className="pixel_text">Are You Sure You Want to Leave?</p>}
           onOk={this.handleOk2}
