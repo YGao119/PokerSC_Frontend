@@ -414,7 +414,7 @@ export default class Board extends Component {
                         <div class="col grid_item_half"></div>
                         <div class="col-5 grid_item_half" style={{textAlign:"center"}}>
                             <p style={{ color: "white", fontSize: "12px", "marginTop": "5px" }} className="pixel_text">{this.state.gameOn ? "Pot: "+this.state.pot : "Waiting For Game To Start..."}</p>
-                            <p style={{ color: "white", fontSize: "12px", "marginTop": "-10px" }} className="pixel_text">{this.state.timeLeft ? "Time Left: "+this.state.timeLeft : this.state.gameOn ? "Hand Ended, You Can Now Rebuy Or Leave":""}</p>
+                            <p style={{ color: "white", fontSize: "10px", "marginTop": "-10px" }} className="pixel_text">{this.state.timeLeft ? "Time Left: "+this.state.timeLeft : this.state.gameOn ? "Hand Ended. You Can Now Rebuy. Continues In 10s...":""}</p>
                         </div>
                         
                         <div class="col grid_item_half"></div>
