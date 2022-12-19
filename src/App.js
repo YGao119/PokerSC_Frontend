@@ -16,7 +16,7 @@ function requestLogin(username, password, setAlert){
         method: 'POST',
         headers: { 'Content-Type': 'text/plain;charset=UTF-8' }
     };
-	const requestUrl = `http://45.79.72.230:8080/login?username=${username}&password=${password}`;
+	const requestUrl = `${process.env.REACT_APP_URL}/login?username=${username}&password=${password}`;
     fetch(requestUrl, requestOptions)
 		.then(response => response.text())
 		.then(
@@ -48,7 +48,8 @@ function requestSignUp(username, password, setAlert){
 		randInt = "0"+randInt;
 	}
 	var pfpUri = "pfps/"+randInt+".png";
-	const requestUrl = `http://45.79.72.230:8080/signup?username=${username}&password=${password}&profile_url=${pfpUri}`;
+	const requestUrl = `${process.env.REACT_APP_URL}/signup?username=${username}&password=${password}&profile_url=${pfpUri}`;
+	console.log(requestUrl);
     fetch(requestUrl, requestOptions)
 		.then(response => response.text())
 		.then(data => {

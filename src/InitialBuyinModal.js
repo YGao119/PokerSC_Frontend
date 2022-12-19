@@ -22,9 +22,11 @@ export default class InitialBuyinModal extends React.Component {
     requestJoin(position, amount, setAlert) {
         const requestOptions = {
             method: 'POST',
-            headers: { 'Content-Type': 'text/plain;charset=UTF-8' }
+            headers: { 
+                'Content-Type': 'text/plain;charset=UTF-8', 
+            }
         };
-        var requestUrl = `http://45.79.72.230:8080/games/join?username=${UserSession.getName()}&position=${position}&buyin=${amount}`;
+        var requestUrl = `${process.env.REACT_APP_URL}/games/join?username=${UserSession.getName()}&position=${position}&buyin=${amount}`;
 
         console.log(requestUrl)
         fetch(requestUrl, requestOptions)

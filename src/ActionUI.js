@@ -1,5 +1,4 @@
 import React from "react";
-import ReactDOM from "react-dom";
 import "antd/dist/antd.css";
 import "./index.css";
 import { Modal, Button } from "antd";
@@ -52,7 +51,7 @@ export default class ActionUI extends React.Component {
           method: 'POST',
           headers: { 'Content-Type': 'text/plain;charset=UTF-8' }
       };
-    var requestUrl = `http://45.79.72.230:8080/games/${action}?username=${UserSession.getName()}`;
+    var requestUrl = `${process.env.REACT_APP_URL}/games/${action}?username=${UserSession.getName()}`;
     if(action === 'raise'){
       requestUrl += `&amount=${amount}`;
     }

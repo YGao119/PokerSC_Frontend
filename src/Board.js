@@ -145,7 +145,7 @@ export default class Board extends Component {
             method: 'POST',
             headers: { 'Content-Type': 'text/plain;charset=UTF-8' }
         };
-        var requestUrl = `http://45.79.72.230:8080/games?username=${UserSession.getName()}&passwordHash=${UserSession.getHash()}`;
+        var requestUrl = `${process.env.REACT_APP_URL}/games?username=${UserSession.getName()}&passwordHash=${UserSession.getHash()}`;
         
         console.log(requestUrl)
         fetch(requestUrl, requestOptions)
@@ -159,12 +159,12 @@ export default class Board extends Component {
                 this.setParsedStateToState(parsed_state);
             }
             else{
-                //alert("no user found");
+                alert("no user found");
             }
             }
         )
         .catch(err => {
-            //console.log("Encounter Error");
+            console.log("Encounter Error");
         })
      }
 
@@ -227,7 +227,7 @@ export default class Board extends Component {
             method: 'POST',
             headers: { 'Content-Type': 'text/plain;charset=UTF-8' }
         };
-        var requestUrl = `http://45.79.72.230:8080/games/leave?username=${UserSession.getName()}`;
+        var requestUrl = `${process.env.REACT_APP_URL}/games/leave?username=${UserSession.getName()}`;
         
         console.log(requestUrl)
         fetch(requestUrl, requestOptions)
@@ -440,7 +440,7 @@ function requestJoin(position, amount, setAlert){
           method: 'POST',
           headers: { 'Content-Type': 'text/plain;charset=UTF-8' }
     };
-    var requestUrl = `http://45.79.72.230:8080/games/join?username=${UserSession.getName()}&position=${position}&buyin=${amount}`;
+    var requestUrl = `${process.env.REACT_APP_URL}/games/join?username=${UserSession.getName()}&position=${position}&buyin=${amount}`;
     
     console.log(requestUrl)
     fetch(requestUrl, requestOptions)
@@ -465,7 +465,7 @@ function requestEmoji(emoji){
           method: 'POST',
           headers: { 'Content-Type': 'text/plain;charset=UTF-8' }
     };
-    var requestUrl = `http://45.79.72.230:8080/games/emoji?username=${UserSession.getName()}&emoji=${emoji}`;
+    var requestUrl = `${process.env.REACT_APP_URL}/games/emoji?username=${UserSession.getName()}&emoji=${emoji}`;
     
     console.log(requestUrl)
     fetch(requestUrl, requestOptions)

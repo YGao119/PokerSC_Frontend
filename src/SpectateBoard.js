@@ -143,7 +143,7 @@ export default class SpectateBoard extends Component {
             method: 'POST',
             headers: { 'Content-Type': 'text/plain;charset=UTF-8' }
         };
-        var requestUrl = `http://45.79.72.230:8080/games?username=SpectatorAccount&passwordHash=e84f9c4cfdb9a3d26424b9f334f4ccbd26ce34a9aa135a30681126942917c589`;
+        var requestUrl = `${process.env.REACT_APP_URL}/games?username=SpectatorAccount&passwordHash=e84f9c4cfdb9a3d26424b9f334f4ccbd26ce34a9aa135a30681126942917c589`;
         
         console.log(requestUrl)
         fetch(requestUrl, requestOptions)
@@ -395,7 +395,7 @@ function requestJoin(position, amount, setAlert){
           method: 'POST',
           headers: { 'Content-Type': 'text/plain;charset=UTF-8' }
     };
-    var requestUrl = `http://45.79.72.230:8080/games/join?username=${UserSession.getName()}&position=${position}&buyin=${amount}`;
+    var requestUrl = `${process.env.REACT_APP_URL}/games/join?username=${UserSession.getName()}&position=${position}&buyin=${amount}`;
     
     console.log(requestUrl)
     fetch(requestUrl, requestOptions)
