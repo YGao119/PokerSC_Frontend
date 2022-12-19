@@ -2,7 +2,7 @@
   "name": "pokersc",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://54.151.25.100:4000",
+  "proxy": "https://master.d1xjux104j7urg.amplifyapp.com:3000",
   "dependencies": {
     "@emotion/react": "^11.7.0",
     "@emotion/styled": "^11.6.0",
